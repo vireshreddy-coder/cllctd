@@ -1,0 +1,880 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0">
+<title>cllctd Earn — Contributor App</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,700;0,900;1,400&family=Instrument+Sans:wght@300;400;500;600&display=swap" rel="stylesheet">
+<style>
+*,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
+:root{
+  --bg:#0c0b09;--bg2:#111009;--surf1:#161410;--surf2:#1c1a14;--surf3:#222018;
+  --border:#2a2720;--border2:#333028;
+  --amber:#f0a832;--amber-d:#d49020;--amber-bg:#1e1608;--amber-light:rgba(240,168,50,.12);
+  --cream:#f5f0e8;--cream-d:#b8b0a0;--muted:#6a6458;
+  --green:#5ec45e;--green-bg:rgba(94,196,94,.1);
+  --blue:#47d4ff;--red:#e05540;
+  --app-max:480px;
+}
+html,body{height:100%;background:#080706}
+body{font-family:'Instrument Sans',sans-serif;color:var(--cream);overflow:hidden;display:flex;justify-content:center;align-items:center}
+
+/* APP SHELL */
+.app-shell{width:100%;max-width:var(--app-max);height:100vh;max-height:900px;background:var(--bg);display:flex;flex-direction:column;position:relative;overflow:hidden;box-shadow:0 0 80px rgba(0,0,0,.8)}
+@media(max-width:480px){.app-shell{max-height:100vh;box-shadow:none}}
+
+/* SCREENS */
+.screen{position:absolute;inset:0;display:flex;flex-direction:column;transition:transform .35s cubic-bezier(.4,0,.2,1),opacity .35s ease;background:var(--bg)}
+.screen.hidden{transform:translateX(100%);opacity:0;pointer-events:none}
+.screen.slide-left{transform:translateX(-100%);opacity:0;pointer-events:none}
+
+/* TOP BAR */
+.top-bar{padding:1rem 1.25rem .75rem;display:flex;align-items:center;justify-content:space-between;border-bottom:1px solid var(--border);flex-shrink:0;background:var(--bg)}
+.top-bar-logo{font-family:'Playfair Display',serif;font-size:1.3rem;font-weight:900;color:var(--cream);letter-spacing:-.02em}
+.top-bar-logo span{color:var(--amber)}
+.top-bar-right{display:flex;align-items:center;gap:.75rem}
+.earnings-pill{display:flex;align-items:center;gap:.4rem;background:var(--amber-bg);border:1px solid rgba(240,168,50,.25);padding:.3rem .75rem;font-size:.78rem;font-weight:600;color:var(--amber)}
+.notif-btn{width:32px;height:32px;display:flex;align-items:center;justify-content:center;background:var(--surf1);border:1px solid var(--border);font-size:.9rem;border-radius:0;cursor:pointer;position:relative}
+.notif-dot{position:absolute;top:6px;right:6px;width:6px;height:6px;background:var(--amber);border-radius:50%}
+
+/* SCROLL CONTENT */
+.scroll-content{flex:1;overflow-y:auto;-webkit-overflow-scrolling:touch}
+.scroll-content::-webkit-scrollbar{display:none}
+
+/* BOTTOM NAV */
+.bottom-nav{display:flex;border-top:1px solid var(--border);background:var(--bg);flex-shrink:0}
+.nav-item{flex:1;display:flex;flex-direction:column;align-items:center;gap:.25rem;padding:.75rem .5rem;cursor:pointer;transition:color .15s;color:var(--muted);border:none;background:none;font-family:'Instrument Sans',sans-serif}
+.nav-item.active{color:var(--amber)}
+.nav-item svg{width:20px;height:20px;stroke:currentColor;fill:none;stroke-width:1.8;stroke-linecap:round;stroke-linejoin:round}
+.nav-item span{font-size:.62rem;font-weight:600;letter-spacing:.04em;text-transform:uppercase}
+
+/* HOME SCREEN */
+.home-header{padding:1.25rem 1.25rem .75rem}
+.home-greeting{font-size:.75rem;color:var(--muted);letter-spacing:.06em;text-transform:uppercase;margin-bottom:.2rem}
+.home-name{font-family:'Playfair Display',serif;font-size:1.6rem;font-weight:700;color:var(--cream);line-height:1.1}
+.home-name em{font-style:italic;color:var(--amber)}
+
+/* STATS ROW */
+.stats-row{display:grid;grid-template-columns:1fr 1fr 1fr;gap:1px;background:var(--border);margin:0 0 1px}
+.stat-box{background:var(--surf1);padding:1rem;text-align:center}
+.stat-val{font-family:'Playfair Display',serif;font-size:1.4rem;font-weight:700;color:var(--amber);display:block;line-height:1}
+.stat-label{font-size:.62rem;color:var(--muted);letter-spacing:.05em;text-transform:uppercase;margin-top:.25rem;display:block}
+
+/* DEMAND BANNER */
+.demand-banner{margin:1px 0;background:var(--amber-bg);border-top:1px solid rgba(240,168,50,.15);border-bottom:1px solid rgba(240,168,50,.15);padding:.75rem 1.25rem;display:flex;align-items:center;gap:.75rem}
+.demand-dot{width:8px;height:8px;background:var(--amber);border-radius:50%;flex-shrink:0;animation:pulse 2s infinite}
+@keyframes pulse{0%,100%{opacity:1}50%{opacity:.3}}
+.demand-text{font-size:.78rem;color:var(--amber);line-height:1.4}
+.demand-text strong{font-weight:600}
+
+/* SECTION LABEL */
+.section-label{padding:.85rem 1.25rem .4rem;font-size:.68rem;font-weight:600;letter-spacing:.1em;text-transform:uppercase;color:var(--muted)}
+
+/* TASK CARDS */
+.task-card{margin:0 0 1px;background:var(--surf1);padding:1.1rem 1.25rem;display:flex;align-items:center;gap:1rem;cursor:pointer;transition:background .15s;border:none;width:100%;text-align:left;font-family:'Instrument Sans',sans-serif;color:var(--cream)}
+.task-card:hover,.task-card:active{background:var(--surf2)}
+.task-card-icon{width:44px;height:44px;display:flex;align-items:center;justify-content:center;font-size:1.3rem;flex-shrink:0;background:var(--bg)}
+.task-card-body{flex:1;min-width:0}
+.task-card-title{font-size:.88rem;font-weight:600;color:var(--cream);margin-bottom:.2rem;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.task-card-meta{font-size:.74rem;color:var(--muted);display:flex;align-items:center;gap:.5rem}
+.task-card-meta .sep{color:var(--border2)}
+.task-card-right{flex-shrink:0;text-align:right}
+.task-pay{font-family:'Playfair Display',serif;font-size:1.1rem;font-weight:700;color:var(--amber);display:block;line-height:1.1}
+.task-time{font-size:.68rem;color:var(--muted);margin-top:.15rem}
+.task-badge{display:inline-flex;font-size:.6rem;font-weight:700;letter-spacing:.07em;text-transform:uppercase;padding:.15rem .45rem;margin-left:.4rem}
+.task-badge.hot{background:rgba(224,85,64,.12);color:var(--red)}
+.task-badge.new{background:rgba(71,212,255,.1);color:var(--blue)}
+.task-badge.bonus{background:var(--amber-bg);color:var(--amber)}
+
+/* PROGRESS BAR */
+.daily-progress{margin:1px 0 0;background:var(--surf1);padding:1.1rem 1.25rem}
+.dp-header{display:flex;align-items:center;justify-content:space-between;margin-bottom:.6rem}
+.dp-label{font-size:.72rem;font-weight:600;letter-spacing:.06em;text-transform:uppercase;color:var(--cream-d)}
+.dp-val{font-size:.72rem;color:var(--amber);font-weight:600}
+.dp-bar{height:4px;background:var(--border);overflow:hidden}
+.dp-fill{height:100%;background:var(--amber);width:38%;transition:width 1s ease}
+
+/* TASK DETAIL SCREEN */
+.task-detail-header{padding:1rem 1.25rem;display:flex;align-items:center;gap:.75rem;border-bottom:1px solid var(--border);flex-shrink:0}
+.back-btn{width:32px;height:32px;display:flex;align-items:center;justify-content:center;background:var(--surf1);border:1px solid var(--border);cursor:pointer;font-size:1rem;flex-shrink:0}
+.task-detail-title{font-size:.9rem;font-weight:600;color:var(--cream);flex:1}
+.task-detail-pay{font-family:'Playfair Display',serif;font-size:1.2rem;font-weight:700;color:var(--amber)}
+.task-hero{padding:1.5rem 1.25rem;background:var(--surf1);border-bottom:1px solid var(--border)}
+.task-hero-icon{font-size:2.5rem;display:block;margin-bottom:.75rem}
+.task-hero h2{font-family:'Playfair Display',serif;font-size:1.5rem;font-weight:700;color:var(--cream);margin-bottom:.4rem;line-height:1.1}
+.task-hero h2 em{font-style:italic;color:var(--amber)}
+.task-hero p{font-size:.85rem;color:var(--cream-d);line-height:1.65}
+.task-meta-row{display:flex;gap:1px;background:var(--border);flex-shrink:0}
+.task-meta-item{flex:1;background:var(--surf1);padding:.85rem .75rem;text-align:center}
+.tmi-val{font-size:.88rem;font-weight:600;color:var(--cream);display:block}
+.tmi-label{font-size:.62rem;color:var(--muted);text-transform:uppercase;letter-spacing:.05em}
+.task-instructions{padding:1.25rem;flex-shrink:0}
+.task-instructions h3{font-size:.72rem;font-weight:600;letter-spacing:.1em;text-transform:uppercase;color:var(--muted);margin-bottom:.75rem}
+.instruction-item{display:flex;gap:.75rem;margin-bottom:.75rem;align-items:flex-start}
+.instr-num{width:20px;height:20px;background:var(--amber-bg);border:1px solid rgba(240,168,50,.25);display:flex;align-items:center;justify-content:center;font-size:.65rem;font-weight:700;color:var(--amber);flex-shrink:0;margin-top:.1rem}
+.instr-text{font-size:.85rem;color:var(--cream-d);line-height:1.6}
+.task-action-area{padding:1.25rem;margin-top:auto;flex-shrink:0;border-top:1px solid var(--border)}
+.btn-full{width:100%;padding:1rem;background:var(--amber);color:var(--bg);border:none;font-family:'Instrument Sans',sans-serif;font-size:.85rem;font-weight:700;letter-spacing:.08em;text-transform:uppercase;cursor:pointer;transition:background .2s;display:flex;align-items:center;justify-content:center;gap:.5rem}
+.btn-full:hover{background:var(--amber-d)}
+.btn-full.secondary{background:var(--surf2);color:var(--cream-d);border:1px solid var(--border2)}
+.btn-full.secondary:hover{background:var(--surf3)}
+
+/* RECORDING SCREEN */
+.recording-screen{background:var(--bg)}
+.rec-header{padding:1rem 1.25rem;display:flex;align-items:center;gap:.75rem;border-bottom:1px solid var(--border);flex-shrink:0}
+.rec-body{flex:1;display:flex;flex-direction:column;align-items:center;justify-content:center;padding:2rem 1.5rem;text-align:center;gap:1.5rem}
+.phrase-card{background:var(--surf1);border:1px solid var(--border2);padding:1.5rem;width:100%;max-width:340px}
+.phrase-num{font-size:.68rem;font-weight:600;letter-spacing:.1em;text-transform:uppercase;color:var(--muted);margin-bottom:.5rem}
+.phrase-text{font-size:1.25rem;color:var(--cream);font-weight:500;line-height:1.5;margin-bottom:.75rem}
+.phrase-transliteration{font-size:.82rem;color:var(--muted);font-style:italic}
+.rec-progress{width:100%;max-width:340px}
+.rp-dots{display:flex;gap:.4rem;justify-content:center;margin-bottom.5rem}
+.rp-dot{width:8px;height:8px;border-radius:50%;background:var(--border2);transition:background .2s}
+.rp-dot.done{background:var(--green)}
+.rp-dot.active{background:var(--amber)}
+.rec-controls{display:flex;flex-direction:column;align-items:center;gap:1rem;width:100%;max-width:340px}
+.rec-btn{width:72px;height:72px;border-radius:50%;border:3px solid var(--amber);background:transparent;display:flex;align-items:center;justify-content:center;cursor:pointer;transition:all .2s;position:relative;flex-shrink:0}
+.rec-btn.recording{background:var(--amber);animation:recPulse 1s ease-in-out infinite}
+.rec-btn .mic-icon{font-size:1.6rem}
+@keyframes recPulse{0%,100%{box-shadow:0 0 0 0 rgba(240,168,50,.4)}50%{box-shadow:0 0 0 16px rgba(240,168,50,0)}}
+.rec-hint{font-size:.78rem;color:var(--muted);text-align:center}
+.rec-waveform{height:40px;display:flex;align-items:center;gap:3px;justify-content:center}
+.wave-bar{width:3px;background:var(--amber);border-radius:2px;transform-origin:bottom;animation:wave 0.6s ease-in-out infinite}
+.wave-bar:nth-child(1){height:8px;animation-delay:0s}
+.wave-bar:nth-child(2){height:20px;animation-delay:.1s}
+.wave-bar:nth-child(3){height:32px;animation-delay:.2s}
+.wave-bar:nth-child(4){height:24px;animation-delay:.3s}
+.wave-bar:nth-child(5){height:14px;animation-delay:.4s}
+.wave-bar:nth-child(6){height:28px;animation-delay:.15s}
+.wave-bar:nth-child(7){height:18px;animation-delay:.25s}
+@keyframes wave{0%,100%{transform:scaleY(1)}50%{transform:scaleY(1.8)}}
+.waveform-idle{display:flex;align-items:center;gap:3px}
+.idle-bar{width:3px;background:var(--border2);border-radius:2px}
+
+/* SUBMISSION SUCCESS */
+.success-screen{display:flex;flex-direction:column;align-items:center;justify-content:center;text-align:center;padding:2rem;gap:1.5rem}
+.success-icon{width:80px;height:80px;background:var(--green-bg);border:2px solid var(--green);border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:2rem;animation:popIn .4s cubic-bezier(.68,-.55,.265,1.55) both}
+@keyframes popIn{from{transform:scale(0)}to{transform:scale(1)}}
+.success-screen h2{font-family:'Playfair Display',serif;font-size:2rem;font-weight:900;color:var(--cream)}
+.success-screen h2 em{font-style:italic;color:var(--green)}
+.success-screen p{font-size:.9rem;color:var(--cream-d);line-height:1.7;max-width:280px}
+.success-earn{background:var(--amber-bg);border:1px solid rgba(240,168,50,.2);padding:1rem 2rem;text-align:center}
+.se-label{font-size:.68rem;font-weight:600;letter-spacing:.12em;text-transform:uppercase;color:var(--muted);margin-bottom:.25rem}
+.se-amount{font-family:'Playfair Display',serif;font-size:2.4rem;font-weight:900;color:var(--amber)}
+.se-sub{font-size:.75rem;color:var(--muted);margin-top:.2rem}
+
+/* EARNINGS SCREEN */
+.earnings-header{padding:1.25rem;border-bottom:1px solid var(--border);flex-shrink:0}
+.earnings-header h2{font-family:'Playfair Display',serif;font-size:1.4rem;font-weight:700;color:var(--cream)}
+.earnings-header h2 em{font-style:italic;color:var(--amber)}
+.balance-card{margin:1px 0;background:var(--surf1);padding:1.5rem 1.25rem;border-bottom:1px solid var(--border)}
+.bc-label{font-size:.68rem;font-weight:600;letter-spacing:.12em;text-transform:uppercase;color:var(--muted);margin-bottom:.3rem}
+.bc-amount{font-family:'Playfair Display',serif;font-size:3rem;font-weight:900;color:var(--amber);line-height:1;margin-bottom:.25rem}
+.bc-pending{font-size:.78rem;color:var(--muted)}
+.bc-pending strong{color:var(--cream-d)}
+.withdraw-row{display:flex;gap:1px;background:var(--border);flex-shrink:0}
+.wd-btn{flex:1;padding:.85rem;background:var(--surf1);border:none;font-family:'Instrument Sans',sans-serif;font-size:.72rem;font-weight:600;letter-spacing:.07em;text-transform:uppercase;color:var(--cream-d);cursor:pointer;transition:background .15s;display:flex;flex-direction:column;align-items:center;gap:.25rem}
+.wd-btn:hover{background:var(--surf2)}
+.wd-btn .wd-icon{font-size:1.1rem}
+.payout-active{color:var(--amber)}
+.history-item{display:flex;align-items:center;justify-content:space-between;padding:.9rem 1.25rem;border-bottom:1px solid var(--border);background:var(--surf1)}
+.hi-left{}
+.hi-task{font-size:.85rem;font-weight:500;color:var(--cream);margin-bottom:.15rem}
+.hi-date{font-size:.72rem;color:var(--muted)}
+.hi-right{text-align:right}
+.hi-amount{font-size:.9rem;font-weight:600;color:var(--green)}
+.hi-status{font-size:.65rem;font-weight:600;letter-spacing:.06em;text-transform:uppercase;padding:.15rem .4rem;background:var(--green-bg);color:var(--green)}
+.hi-status.pending{background:var(--amber-bg);color:var(--amber)}
+
+/* PROFILE SCREEN */
+.profile-header{padding:1.5rem 1.25rem 1rem;text-align:center;border-bottom:1px solid var(--border);flex-shrink:0}
+.profile-avatar{width:64px;height:64px;background:var(--amber-bg);border:2px solid var(--amber);border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:1.5rem;margin:0 auto .75rem}
+.profile-name{font-family:'Playfair Display',serif;font-size:1.3rem;font-weight:700;color:var(--cream)}
+.profile-lang{font-size:.78rem;color:var(--muted);margin-top:.2rem}
+.profile-badges{display:flex;gap:.5rem;justify-content:center;margin-top:.75rem;flex-wrap:wrap}
+.p-badge{font-size:.65rem;font-weight:600;letter-spacing:.07em;text-transform:uppercase;padding:.25rem .6rem;background:var(--surf2);color:var(--cream-d)}
+.p-badge.gold{background:var(--amber-bg);color:var(--amber)}
+.profile-stats{display:grid;grid-template-columns:1fr 1fr 1fr;gap:1px;background:var(--border)}
+.ps-box{background:var(--surf1);padding:1rem;text-align:center}
+.ps-val{font-family:'Playfair Display',serif;font-size:1.3rem;font-weight:700;color:var(--amber);display:block}
+.ps-label{font-size:.62rem;color:var(--muted);text-transform:uppercase;letter-spacing:.05em}
+.profile-section{padding:.75rem 1.25rem .25rem;font-size:.68rem;font-weight:600;letter-spacing:.1em;text-transform:uppercase;color:var(--muted)}
+.profile-item{display:flex;align-items:center;justify-content:space-between;padding:.9rem 1.25rem;border-bottom:1px solid var(--border);background:var(--surf1);cursor:pointer}
+.profile-item:hover{background:var(--surf2)}
+.pi-left{display:flex;align-items:center;gap:.75rem}
+.pi-icon{font-size:1rem;width:28px;text-align:center}
+.pi-label{font-size:.85rem;color:var(--cream)}
+.pi-right{font-size:.75rem;color:var(--muted)}
+.quality-bar{padding:1rem 1.25rem;background:var(--surf1);border-bottom:1px solid var(--border)}
+.qb-header{display:flex;justify-content:space-between;margin-bottom:.5rem}
+.qb-label{font-size:.72rem;font-weight:600;letter-spacing:.06em;text-transform:uppercase;color:var(--cream-d)}
+.qb-val{font-size:.72rem;color:var(--green);font-weight:600}
+.qb-track{height:6px;background:var(--border);overflow:hidden}
+.qb-fill{height:100%;background:var(--green);width:91%}
+
+/* TOAST */
+.toast{position:absolute;bottom:80px;left:50%;transform:translateX(-50%) translateY(20px);background:var(--surf2);border:1px solid var(--border2);padding:.65rem 1.25rem;font-size:.8rem;color:var(--cream);white-space:nowrap;opacity:0;transition:all .3s;pointer-events:none;z-index:100}
+.toast.show{opacity:1;transform:translateX(-50%) translateY(0)}
+</style>
+</head>
+<body>
+
+<div class="app-shell" id="app">
+
+  <!-- TOAST -->
+  <div class="toast" id="toast"></div>
+
+  <!-- ══════════════════════════════
+       SCREEN: HOME / TASK FEED
+  ══════════════════════════════ -->
+  <div class="screen" id="screenHome">
+    <!-- Top bar -->
+    <div class="top-bar">
+      <div class="top-bar-logo">cllctd<span>.</span></div>
+      <div class="top-bar-right">
+        <div class="earnings-pill">₹<span id="topBarEarnings">1,240</span></div>
+        <div class="notif-btn" onclick="showToast('No new notifications')">🔔<div class="notif-dot"></div></div>
+      </div>
+    </div>
+
+    <div class="scroll-content">
+      <!-- Greeting -->
+      <div class="home-header">
+        <div class="home-greeting">Good afternoon</div>
+        <div class="home-name">Priya, <em>ready to earn?</em></div>
+      </div>
+
+      <!-- Stats -->
+      <div class="stats-row">
+        <div class="stat-box">
+          <span class="stat-val">₹1,240</span>
+          <span class="stat-label">This Week</span>
+        </div>
+        <div class="stat-box">
+          <span class="stat-val">18</span>
+          <span class="stat-label">Tasks Done</span>
+        </div>
+        <div class="stat-box">
+          <span class="stat-val">91%</span>
+          <span class="stat-label">Approval Rate</span>
+        </div>
+      </div>
+
+      <!-- Daily progress -->
+      <div class="daily-progress">
+        <div class="dp-header">
+          <span class="dp-label">Today's goal</span>
+          <span class="dp-val">₹190 / ₹500</span>
+        </div>
+        <div class="dp-bar"><div class="dp-fill" id="dpFill"></div></div>
+      </div>
+
+      <!-- Demand banner -->
+      <div class="demand-banner">
+        <div class="demand-dot"></div>
+        <div class="demand-text"><strong>High demand right now:</strong> Tamil voice recordings — buyers paying 2× bonus today only</div>
+      </div>
+
+      <!-- Available tasks -->
+      <div class="section-label">Available Tasks</div>
+
+      <button class="task-card" onclick="openTask('voice-hindi')">
+        <div class="task-card-icon">🎙️</div>
+        <div class="task-card-body">
+          <div class="task-card-title">Hindi Phrase Recording <span class="task-badge hot">2× bonus</span></div>
+          <div class="task-card-meta"><span>Voice</span><span class="sep">·</span><span>Hindi</span><span class="sep">·</span><span>10 phrases</span></div>
+        </div>
+        <div class="task-card-right">
+          <span class="task-pay">₹170</span>
+          <div class="task-time">~8 min</div>
+        </div>
+      </button>
+
+      <button class="task-card" onclick="openTask('voice-tamil')">
+        <div class="task-card-icon">🎙️</div>
+        <div class="task-card-body">
+          <div class="task-card-title">Tamil Conversation Set <span class="task-badge hot">Hot</span></div>
+          <div class="task-card-meta"><span>Voice</span><span class="sep">·</span><span>Tamil</span><span class="sep">·</span><span>2 min dialogue</span></div>
+        </div>
+        <div class="task-card-right">
+          <span class="task-pay">₹240</span>
+          <div class="task-time">~12 min</div>
+        </div>
+      </button>
+
+      <button class="task-card" onclick="openTask('video-pov')">
+        <div class="task-card-icon">🎬</div>
+        <div class="task-card-body">
+          <div class="task-card-title">Workplace POV Clip <span class="task-badge new">New</span></div>
+          <div class="task-card-meta"><span>Video</span><span class="sep">·</span><span>30 seconds</span><span class="sep">·</span><span>Hands visible</span></div>
+        </div>
+        <div class="task-card-right">
+          <span class="task-pay">₹180</span>
+          <div class="task-time">~5 min</div>
+        </div>
+      </button>
+
+      <button class="task-card" onclick="openTask('photo-street')">
+        <div class="task-card-icon">📷</div>
+        <div class="task-card-body">
+          <div class="task-card-title">Street Scene Photo Set</div>
+          <div class="task-card-meta"><span>Photos</span><span class="sep">·</span><span>10 images</span><span class="sep">·</span><span>Outdoors</span></div>
+        </div>
+        <div class="task-card-right">
+          <span class="task-pay">₹70</span>
+          <div class="task-time">~10 min</div>
+        </div>
+      </button>
+
+      <button class="task-card" onclick="openTask('text-label')">
+        <div class="task-card-icon">📝</div>
+        <div class="task-card-body">
+          <div class="task-card-title">Sentence Sentiment Labels</div>
+          <div class="task-card-meta"><span>Text</span><span class="sep">·</span><span>20 sentences</span><span class="sep">·</span><span>Any language</span></div>
+        </div>
+        <div class="task-card-right">
+          <span class="task-pay">₹45</span>
+          <div class="task-time">~6 min</div>
+        </div>
+      </button>
+
+      <button class="task-card" onclick="openTask('voice-marathi')">
+        <div class="task-card-icon">🎙️</div>
+        <div class="task-card-body">
+          <div class="task-card-title">Marathi Regional Phrases <span class="task-badge bonus">+₹30</span></div>
+          <div class="task-card-meta"><span>Voice</span><span class="sep">·</span><span>Marathi</span><span class="sep">·</span><span>8 phrases</span></div>
+        </div>
+        <div class="task-card-right">
+          <span class="task-pay">₹115</span>
+          <div class="task-time">~7 min</div>
+        </div>
+      </button>
+
+      <div style="height:1.5rem"></div>
+    </div>
+
+    <nav class="bottom-nav">
+      <button class="nav-item active" onclick="switchTab('home')">
+        <svg viewBox="0 0 24 24"><path d="M3 12l2-2m0 0l7-7 7 7M5 10v10a1 1 0 001 1h3m10-11l2 2m-2-2v10a1 1 0 01-1 1h-3m-6 0a1 1 0 001-1v-4a1 1 0 011-1h2a1 1 0 011 1v4a1 1 0 001 1m-6 0h6"/></svg>
+        <span>Tasks</span>
+      </button>
+      <button class="nav-item" onclick="switchTab('earnings')">
+        <svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="9"/><path d="M14.8 9A2 2 0 0013 8h-2a2 2 0 000 4h2a2 2 0 010 4h-2a2 2 0 01-1.8-1M12 7v1m0 8v1"/></svg>
+        <span>Earnings</span>
+      </button>
+      <button class="nav-item" onclick="switchTab('profile')">
+        <svg viewBox="0 0 24 24"><path d="M20 21v-2a4 4 0 00-4-4H8a4 4 0 00-4 4v2"/><circle cx="12" cy="7" r="4"/></svg>
+        <span>Profile</span>
+      </button>
+    </nav>
+  </div>
+
+  <!-- ══════════════════════════════
+       SCREEN: TASK DETAIL
+  ══════════════════════════════ -->
+  <div class="screen hidden" id="screenTaskDetail">
+    <div class="task-detail-header">
+      <button class="back-btn" onclick="goBack()">←</button>
+      <span class="task-detail-title" id="tdTitle">Task Detail</span>
+      <span class="task-detail-pay" id="tdPay">₹170</span>
+    </div>
+
+    <div class="scroll-content">
+      <div class="task-hero">
+        <span class="task-hero-icon" id="tdIcon">🎙️</span>
+        <h2 id="tdHeadline">Hindi Phrase <em>Recording</em></h2>
+        <p id="tdDesc">Record yourself speaking 10 common Hindi phrases. Natural voice, no need to perform — just speak clearly the way you normally would.</p>
+      </div>
+
+      <div class="task-meta-row">
+        <div class="task-meta-item"><span class="tmi-val" id="tdTime">~8 min</span><span class="tmi-label">Est. time</span></div>
+        <div class="task-meta-item"><span class="tmi-val" id="tdCount">10</span><span class="tmi-label">Items</span></div>
+        <div class="task-meta-item"><span class="tmi-val">24h</span><span class="tmi-label">Review time</span></div>
+      </div>
+
+      <div class="task-instructions">
+        <h3>Instructions</h3>
+        <div id="tdInstructions">
+          <div class="instruction-item"><div class="instr-num">1</div><div class="instr-text">Find a quiet place — background noise causes rejections</div></div>
+          <div class="instruction-item"><div class="instr-num">2</div><div class="instr-text">Tap the mic button and speak each phrase naturally</div></div>
+          <div class="instruction-item"><div class="instr-num">3</div><div class="instr-text">Hold the mic 15–20cm from your mouth</div></div>
+          <div class="instruction-item"><div class="instr-num">4</div><div class="instr-text">Don't rush — a 1-second pause between phrases is fine</div></div>
+        </div>
+      </div>
+    </div>
+
+    <div class="task-action-area">
+      <button class="btn-full" id="tdStartBtn" onclick="startTask()">Start Task →</button>
+    </div>
+  </div>
+
+  <!-- ══════════════════════════════
+       SCREEN: VOICE RECORDING
+  ══════════════════════════════ -->
+  <div class="screen hidden recording-screen" id="screenRecording">
+    <div class="rec-header">
+      <button class="back-btn" onclick="goToDetail()">←</button>
+      <span style="font-size:.85rem;font-weight:600;color:var(--cream);flex:1">Hindi Phrases</span>
+      <span style="font-size:.78rem;color:var(--muted)" id="recProgress">1 of 10</span>
+    </div>
+
+    <div class="rec-body">
+      <div class="phrase-card">
+        <div class="phrase-num" id="phraseNum">Phrase 1 of 10</div>
+        <div class="phrase-text" id="phraseText">नमस्ते, आप कैसे हैं?</div>
+        <div class="phrase-transliteration" id="phraseTrans">Namaste, aap kaise hain?</div>
+      </div>
+
+      <div class="rec-progress">
+        <div class="rp-dots" id="rpDots"></div>
+      </div>
+
+      <div class="rec-controls">
+        <div class="rec-waveform" id="waveformActive" style="display:none">
+          <div class="wave-bar"></div><div class="wave-bar"></div><div class="wave-bar"></div>
+          <div class="wave-bar"></div><div class="wave-bar"></div><div class="wave-bar"></div>
+          <div class="wave-bar"></div>
+        </div>
+        <div class="waveform-idle" id="waveformIdle">
+          <div class="idle-bar" style="height:8px"></div>
+          <div class="idle-bar" style="height:14px"></div>
+          <div class="idle-bar" style="height:6px"></div>
+          <div class="idle-bar" style="height:18px"></div>
+          <div class="idle-bar" style="height:10px"></div>
+          <div class="idle-bar" style="height:14px"></div>
+          <div class="idle-bar" style="height:8px"></div>
+        </div>
+
+        <button class="rec-btn" id="recBtn" onclick="toggleRecording()">
+          <span class="mic-icon">🎙️</span>
+        </button>
+
+        <div class="rec-hint" id="recHint">Tap to start recording</div>
+      </div>
+    </div>
+
+    <div style="padding:1.25rem;border-top:1px solid var(--border);flex-shrink:0">
+      <button class="btn-full secondary" id="recSkipBtn" onclick="nextPhrase(false)">Skip this phrase</button>
+    </div>
+  </div>
+
+  <!-- ══════════════════════════════
+       SCREEN: SUCCESS
+  ══════════════════════════════ -->
+  <div class="screen hidden" id="screenSuccess">
+    <div class="success-screen">
+      <div class="success-icon">✓</div>
+      <h2>Task <em>submitted!</em></h2>
+      <p>Your recording has been submitted for review. We'll notify you when it's approved — usually within 24 hours.</p>
+      <div class="success-earn">
+        <div class="se-label">Pending earnings</div>
+        <div class="se-amount" id="successAmount">₹170</div>
+        <div class="se-sub">Added on approval</div>
+      </div>
+      <button class="btn-full" onclick="goHome()" style="max-width:300px">Back to Tasks →</button>
+      <button class="btn-full secondary" onclick="switchTab('earnings');goHome();" style="max-width:300px;margin-top:.5rem">View Earnings</button>
+    </div>
+  </div>
+
+  <!-- ══════════════════════════════
+       SCREEN: EARNINGS
+  ══════════════════════════════ -->
+  <div class="screen hidden" id="screenEarnings">
+    <div class="top-bar">
+      <div class="top-bar-logo">cllctd<span>.</span></div>
+    </div>
+
+    <div class="scroll-content">
+      <div class="earnings-header">
+        <h2>Your <em>earnings.</em></h2>
+      </div>
+
+      <div class="balance-card">
+        <div class="bc-label">Available balance</div>
+        <div class="bc-amount">₹1,240</div>
+        <div class="bc-pending">+ <strong>₹410 pending</strong> review</div>
+      </div>
+
+      <div class="withdraw-row">
+        <button class="wd-btn payout-active" onclick="showToast('UPI withdrawal — coming soon in live app')">
+          <span class="wd-icon">📲</span>UPI
+        </button>
+        <button class="wd-btn" onclick="showToast('Bank transfer — coming soon in live app')">
+          <span class="wd-icon">🏦</span>Bank
+        </button>
+        <button class="wd-btn" onclick="showToast('Crypto — coming soon in live app')">
+          <span class="wd-icon">₿</span>USDC
+        </button>
+        <button class="wd-btn" onclick="showToast('Points balance: 1,240 pts')">
+          <span class="wd-icon">🎯</span>Points
+        </button>
+      </div>
+
+      <div class="section-label">Transaction History</div>
+
+      <div class="history-item">
+        <div class="hi-left"><div class="hi-task">Hindi Phrase Recording ×10</div><div class="hi-date">Today · 2:14pm</div></div>
+        <div class="hi-right"><div class="hi-amount">+₹170</div><div class="hi-status pending">Pending</div></div>
+      </div>
+      <div class="history-item">
+        <div class="hi-left"><div class="hi-task">Workplace POV Video</div><div class="hi-date">Today · 11:02am</div></div>
+        <div class="hi-right"><div class="hi-amount">+₹180</div><div class="hi-status">Approved</div></div>
+      </div>
+      <div class="history-item">
+        <div class="hi-left"><div class="hi-task">Tamil Voice Set</div><div class="hi-date">Yesterday</div></div>
+        <div class="hi-right"><div class="hi-amount">+₹240</div><div class="hi-status">Approved</div></div>
+      </div>
+      <div class="history-item">
+        <div class="hi-left"><div class="hi-task">Street Scene Photos ×10</div><div class="hi-date">Yesterday</div></div>
+        <div class="hi-right"><div class="hi-amount">+₹70</div><div class="hi-status">Approved</div></div>
+      </div>
+      <div class="history-item">
+        <div class="hi-left"><div class="hi-task">Sentence Labels ×20</div><div class="hi-date">2 days ago</div></div>
+        <div class="hi-right"><div class="hi-amount">+₹45</div><div class="hi-status">Approved</div></div>
+      </div>
+      <div class="history-item">
+        <div class="hi-left"><div class="hi-task">UPI Withdrawal</div><div class="hi-date">3 days ago</div></div>
+        <div class="hi-right"><div class="hi-amount" style="color:var(--red)">-₹500</div><div class="hi-status">Paid</div></div>
+      </div>
+      <div style="height:1.5rem"></div>
+    </div>
+
+    <nav class="bottom-nav">
+      <button class="nav-item" onclick="switchTab('home')">
+        <svg viewBox="0 0 24 24"><path d="M3 12l2-2m0 0l7-7 7 7M5 10v10a1 1 0 001 1h3m10-11l2 2m-2-2v10a1 1 0 01-1 1h-3m-6 0a1 1 0 001-1v-4a1 1 0 011-1h2a1 1 0 011 1v4a1 1 0 001 1m-6 0h6"/></svg>
+        <span>Tasks</span>
+      </button>
+      <button class="nav-item active" onclick="switchTab('earnings')">
+        <svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="9"/><path d="M14.8 9A2 2 0 0013 8h-2a2 2 0 000 4h2a2 2 0 010 4h-2a2 2 0 01-1.8-1M12 7v1m0 8v1"/></svg>
+        <span>Earnings</span>
+      </button>
+      <button class="nav-item" onclick="switchTab('profile')">
+        <svg viewBox="0 0 24 24"><path d="M20 21v-2a4 4 0 00-4-4H8a4 4 0 00-4 4v2"/><circle cx="12" cy="7" r="4"/></svg>
+        <span>Profile</span>
+      </button>
+    </nav>
+  </div>
+
+  <!-- ══════════════════════════════
+       SCREEN: PROFILE
+  ══════════════════════════════ -->
+  <div class="screen hidden" id="screenProfile">
+    <div class="top-bar">
+      <div class="top-bar-logo">cllctd<span>.</span></div>
+    </div>
+
+    <div class="scroll-content">
+      <div class="profile-header">
+        <div class="profile-avatar">🙋‍♀️</div>
+        <div class="profile-name">Priya Sharma</div>
+        <div class="profile-lang">Hindi · Tamil · Mumbai, Maharashtra</div>
+        <div class="profile-badges">
+          <span class="p-badge gold">⭐ Top Contributor</span>
+          <span class="p-badge">Voice Verified</span>
+          <span class="p-badge">KYC Done</span>
+        </div>
+      </div>
+
+      <div class="profile-stats">
+        <div class="ps-box"><span class="ps-val">247</span><span class="ps-label">Tasks</span></div>
+        <div class="ps-box"><span class="ps-val">₹18,440</span><span class="ps-label">Earned</span></div>
+        <div class="ps-box"><span class="ps-val">91%</span><span class="ps-label">Quality</span></div>
+      </div>
+
+      <div class="quality-bar">
+        <div class="qb-header"><span class="qb-label">Quality Score</span><span class="qb-val">91% — Excellent</span></div>
+        <div class="qb-track"><div class="qb-fill"></div></div>
+      </div>
+
+      <div class="profile-section">Account</div>
+      <div class="profile-item" onclick="showToast('Languages: Hindi, Tamil')">
+        <div class="pi-left"><span class="pi-icon">🌐</span><span class="pi-label">Languages</span></div>
+        <div class="pi-right">Hindi, Tamil →</div>
+      </div>
+      <div class="profile-item" onclick="showToast('Payout: UPI — priya@upi')">
+        <div class="pi-left"><span class="pi-icon">📲</span><span class="pi-label">Payout Method</span></div>
+        <div class="pi-right">UPI →</div>
+      </div>
+      <div class="profile-item" onclick="showToast('Identity verified ✓')">
+        <div class="pi-left"><span class="pi-icon">🪪</span><span class="pi-label">Identity Verification</span></div>
+        <div class="pi-right" style="color:var(--green)">Verified ✓</div>
+      </div>
+
+      <div class="profile-section">Data &amp; Privacy</div>
+      <div class="profile-item" onclick="showToast('Your data rights are fully documented')">
+        <div class="pi-left"><span class="pi-icon">🔒</span><span class="pi-label">My Data Rights</span></div>
+        <div class="pi-right">View →</div>
+      </div>
+      <div class="profile-item" onclick="showToast('Consent records available for download')">
+        <div class="pi-left"><span class="pi-icon">📄</span><span class="pi-label">Consent Records</span></div>
+        <div class="pi-right">Download →</div>
+      </div>
+      <div class="profile-item" onclick="showToast('Refer friends and earn ₹100 per approved contributor')">
+        <div class="pi-left"><span class="pi-icon">👥</span><span class="pi-label">Refer &amp; Earn</span></div>
+        <div class="pi-right" style="color:var(--amber)">₹100/referral →</div>
+      </div>
+
+      <div style="height:1.5rem"></div>
+    </div>
+
+    <nav class="bottom-nav">
+      <button class="nav-item" onclick="switchTab('home')">
+        <svg viewBox="0 0 24 24"><path d="M3 12l2-2m0 0l7-7 7 7M5 10v10a1 1 0 001 1h3m10-11l2 2m-2-2v10a1 1 0 01-1 1h-3m-6 0a1 1 0 001-1v-4a1 1 0 011-1h2a1 1 0 011 1v4a1 1 0 001 1m-6 0h6"/></svg>
+        <span>Tasks</span>
+      </button>
+      <button class="nav-item" onclick="switchTab('earnings')">
+        <svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="9"/><path d="M14.8 9A2 2 0 0013 8h-2a2 2 0 000 4h2a2 2 0 010 4h-2a2 2 0 01-1.8-1M12 7v1m0 8v1"/></svg>
+        <span>Earnings</span>
+      </button>
+      <button class="nav-item active" onclick="switchTab('profile')">
+        <svg viewBox="0 0 24 24"><path d="M20 21v-2a4 4 0 00-4-4H8a4 4 0 00-4 4v2"/><circle cx="12" cy="7" r="4"/></svg>
+        <span>Profile</span>
+      </button>
+    </nav>
+  </div>
+
+</div><!-- end app-shell -->
+
+<script>
+// ── TASK DATA ─────────────────────────────────────────
+const tasks = {
+  'voice-hindi': {
+    icon:'🎙️', pay:'₹170', time:'~8 min', count:'10',
+    headline:'Hindi Phrase <em>Recording</em>',
+    desc:'Record yourself speaking 10 common Hindi phrases. Natural voice — just speak clearly the way you normally would.',
+    type:'voice',
+    instructions:[
+      'Find a quiet place — background noise causes rejections',
+      'Tap the mic button and speak each phrase naturally',
+      'Hold your phone 15–20cm from your mouth',
+      'A 1-second pause between phrases is fine'
+    ]
+  },
+  'voice-tamil': {
+    icon:'🎙️', pay:'₹240', time:'~12 min', count:'1',
+    headline:'Tamil Conversation <em>Set</em>',
+    desc:'Record a 2-minute natural conversation prompt in Tamil. Speak as you would in daily life — regional accent is preferred.',
+    type:'voice',
+    instructions:[
+      'Read the conversation prompt on screen',
+      'Speak naturally — don\'t sound like you\'re reading',
+      'Regional accent and idioms are a plus',
+      'Minimum audio quality: quiet room, no echo'
+    ]
+  },
+  'video-pov': {
+    icon:'🎬', pay:'₹180', time:'~5 min', count:'1',
+    headline:'Workplace POV <em>Clip</em>',
+    desc:'Film 30 seconds of your hands performing a work task from a first-person perspective. Construction, cooking, repair, driving — any manual task works.',
+    type:'video',
+    instructions:[
+      'Mount or hold your phone at eye level or chest height',
+      'Your hands should be clearly visible throughout',
+      'Keep moving — don\'t stay static for more than 3 seconds',
+      'No faces needed — hands and environment only'
+    ]
+  },
+  'photo-street': {
+    icon:'📷', pay:'₹70', time:'~10 min', count:'10',
+    headline:'Street Scene <em>Photos</em>',
+    desc:'Upload 10 photos of outdoor street scenes from your area. Markets, roads, shops, traffic — everyday public spaces.',
+    type:'photo',
+    instructions:[
+      'Take photos outdoors in natural light',
+      'Avoid blurry or dark images',
+      'No people\'s faces visible (blur or avoid)',
+      'Variety preferred — different streets/angles'
+    ]
+  },
+  'text-label': {
+    icon:'📝', pay:'₹45', time:'~6 min', count:'20',
+    headline:'Sentence Sentiment <em>Labels</em>',
+    desc:'Read 20 short sentences and label each as positive, negative, or neutral. Takes about 6 minutes.',
+    type:'text',
+    instructions:[
+      'Read each sentence fully before labelling',
+      'Choose the overall tone — don\'t overthink it',
+      'If genuinely ambiguous, use "neutral"',
+      'Any language welcome for this task'
+    ]
+  },
+  'voice-marathi': {
+    icon:'🎙️', pay:'₹115', time:'~7 min', count:'8',
+    headline:'Marathi Regional <em>Phrases</em>',
+    desc:'Record 8 phrases in Marathi. Regional Pune or Nashik dialect is particularly valuable for this task.',
+    type:'voice',
+    instructions:[
+      'Speak in your natural Marathi dialect',
+      'Don\'t switch to Hindi mid-recording',
+      'Clear pronunciation, normal pace',
+      'Quiet room required'
+    ]
+  }
+};
+
+// Hindi phrases for demo recording
+const hindiPhrases = [
+  {text:'नमस्ते, आप कैसे हैं?', trans:'Namaste, aap kaise hain?'},
+  {text:'मेरा नाम प्रिया है।', trans:'Mera naam Priya hai.'},
+  {text:'आज मौसम बहुत अच्छा है।', trans:'Aaj mausam bahut achha hai.'},
+  {text:'क्या आप मुझे बता सकते हैं?', trans:'Kya aap mujhe bata sakte hain?'},
+  {text:'मुझे बहुत खुशी है।', trans:'Mujhe bahut khushi hai.'},
+  {text:'यह बाज़ार कहाँ है?', trans:'Yeh bazaar kahan hai?'},
+  {text:'धन्यवाद, आपकी बहुत मदद हुई।', trans:'Dhanyavaad, aapki bahut madad hui.'},
+  {text:'मैं कल वापस आऊँगी।', trans:'Main kal waapas aaungi.'},
+  {text:'यह काम बहुत ज़रूरी है।', trans:'Yeh kaam bahut zaroori hai.'},
+  {text:'शुभ रात्रि, अच्छी नींद लें।', trans:'Shubh raatri, achhi neend lein.'}
+];
+
+// ── STATE ──────────────────────────────────────────────
+let currentTask = null;
+let currentScreen = 'home';
+let phraseIndex = 0;
+let isRecording = false;
+let recTimer = null;
+let recordedPhrases = [];
+
+// ── SCREEN NAV ─────────────────────────────────────────
+function showScreen(id, direction='right') {
+  const prev = document.getElementById('screen' + cap(currentScreen));
+  const next = document.getElementById('screen' + cap(id));
+  if (prev && prev !== next) {
+    prev.classList.add(direction === 'right' ? 'slide-left' : 'hidden');
+  }
+  if (next) {
+    next.classList.remove('hidden','slide-left');
+  }
+  currentScreen = id;
+}
+function cap(s){ return s.charAt(0).toUpperCase() + s.slice(1); }
+
+function switchTab(tab) {
+  ['home','earnings','profile'].forEach(t => {
+    const s = document.getElementById('screen' + cap(t));
+    s.classList.toggle('hidden', t !== tab);
+    s.classList.remove('slide-left');
+  });
+  currentScreen = tab;
+}
+
+function goBack() { showScreen('home','left'); }
+function goToDetail() { showScreen('taskDetail','left'); }
+function goHome() { showScreen('home','left'); phraseIndex=0; recordedPhrases=[]; }
+
+// ── OPEN TASK ──────────────────────────────────────────
+function openTask(id) {
+  currentTask = tasks[id];
+  if (!currentTask) return;
+  document.getElementById('tdTitle').textContent = currentTask.headline.replace(/<[^>]+>/g,'');
+  document.getElementById('tdPay').textContent = currentTask.pay;
+  document.getElementById('tdIcon').textContent = currentTask.icon;
+  document.getElementById('tdHeadline').innerHTML = currentTask.headline;
+  document.getElementById('tdDesc').textContent = currentTask.desc;
+  document.getElementById('tdTime').textContent = currentTask.time;
+  document.getElementById('tdCount').textContent = currentTask.count;
+  document.getElementById('tdInstructions').innerHTML = currentTask.instructions
+    .map((t,i) => `<div class="instruction-item"><div class="instr-num">${i+1}</div><div class="instr-text">${t}</div></div>`).join('');
+  document.getElementById('successAmount').textContent = currentTask.pay;
+  showScreen('taskDetail');
+}
+
+function startTask() {
+  if (!currentTask) return;
+  if (currentTask.type === 'voice') {
+    phraseIndex = 0;
+    recordedPhrases = [];
+    updatePhraseScreen();
+    buildDots();
+    showScreen('recording');
+  } else {
+    // For non-voice tasks, go straight to success after a beat
+    showScreen('success');
+  }
+}
+
+// ── RECORDING FLOW ─────────────────────────────────────
+function buildDots() {
+  const container = document.getElementById('rpDots');
+  container.innerHTML = hindiPhrases.map((_, i) =>
+    `<div class="rp-dot${i===0?' active':''}" id="dot-${i}"></div>`
+  ).join('');
+}
+
+function updatePhraseScreen() {
+  const p = hindiPhrases[phraseIndex];
+  document.getElementById('phraseNum').textContent = `Phrase ${phraseIndex+1} of ${hindiPhrases.length}`;
+  document.getElementById('phraseText').textContent = p.text;
+  document.getElementById('phraseTrans').textContent = p.trans;
+  document.getElementById('recProgress').textContent = `${phraseIndex+1} of ${hindiPhrases.length}`;
+  document.getElementById('recHint').textContent = 'Tap to start recording';
+  document.getElementById('recBtn').classList.remove('recording');
+  document.getElementById('waveformActive').style.display = 'none';
+  document.getElementById('waveformIdle').style.display = 'flex';
+  isRecording = false;
+}
+
+function toggleRecording() {
+  if (isRecording) {
+    stopRecording();
+  } else {
+    startRecording();
+  }
+}
+
+function startRecording() {
+  isRecording = true;
+  document.getElementById('recBtn').classList.add('recording');
+  document.getElementById('waveformActive').style.display = 'flex';
+  document.getElementById('waveformIdle').style.display = 'none';
+  document.getElementById('recHint').textContent = 'Recording… tap to stop';
+  // Auto-stop after 4s for demo
+  recTimer = setTimeout(() => { if (isRecording) stopRecording(); }, 4000);
+}
+
+function stopRecording() {
+  clearTimeout(recTimer);
+  isRecording = false;
+  document.getElementById('recBtn').classList.remove('recording');
+  document.getElementById('waveformActive').style.display = 'none';
+  document.getElementById('waveformIdle').style.display = 'flex';
+  document.getElementById('recHint').textContent = '✓ Recorded — moving to next';
+  recordedPhrases.push(phraseIndex);
+  // Mark dot done
+  const dot = document.getElementById('dot-' + phraseIndex);
+  if (dot) { dot.classList.remove('active'); dot.classList.add('done'); }
+  setTimeout(() => nextPhrase(true), 800);
+}
+
+function nextPhrase(recorded) {
+  if (!recorded) {
+    const dot = document.getElementById('dot-' + phraseIndex);
+    if (dot) dot.classList.remove('active');
+  }
+  phraseIndex++;
+  if (phraseIndex >= hindiPhrases.length) {
+    showScreen('success');
+    return;
+  }
+  const dot = document.getElementById('dot-' + phraseIndex);
+  if (dot) dot.classList.add('active');
+  updatePhraseScreen();
+}
+
+// ── TOAST ──────────────────────────────────────────────
+let toastTimer;
+function showToast(msg) {
+  clearTimeout(toastTimer);
+  const t = document.getElementById('toast');
+  t.textContent = msg;
+  t.classList.add('show');
+  toastTimer = setTimeout(() => t.classList.remove('show'), 2500);
+}
+
+// ── ANIMATE PROGRESS BAR ───────────────────────────────
+setTimeout(() => {
+  document.getElementById('dpFill').style.width = '38%';
+}, 300);
+</script>
+</body>
+</html>
