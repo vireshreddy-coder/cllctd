@@ -1,0 +1,319 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>cllctd — About</title>
+<meta name="description" content="cllctd is a two-sided AI data marketplace headquartered in Dubai, sourcing from India. Built on the belief that data should be collected, not scraped.">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,400;0,700;0,900;1,400&family=Instrument+Sans:wght@300;400;500;600&display=swap" rel="stylesheet">
+<style>
+*,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
+:root{--bg:#0c0b09;--bg2:#111009;--surf1:#161410;--surf2:#1c1a14;--border:#2a2720;--border2:#333028;--amber:#f0a832;--amber-d:#d49020;--amber-bg:#1e1608;--cream:#f5f0e8;--cream-d:#b8b0a0;--muted:#6a6458;--green:#5ec45e}
+html{scroll-behavior:smooth}
+body{background:var(--bg);color:var(--cream);font-family:'Instrument Sans',sans-serif;line-height:1.6;overflow-x:hidden;cursor:none}
+.cursor{position:fixed;top:0;left:0;z-index:9999;width:10px;height:10px;background:var(--amber);border-radius:50%;pointer-events:none;transform:translate(-50%,-50%);transition:transform .15s}
+.cursor-ring{position:fixed;top:0;left:0;z-index:9998;width:32px;height:32px;border:1px solid rgba(240,168,50,.35);border-radius:50%;pointer-events:none;transform:translate(-50%,-50%);transition:transform .35s,opacity .2s}
+a,button{cursor:none}
+nav{position:fixed;top:0;left:0;right:0;z-index:200;height:64px;display:flex;align-items:center;justify-content:space-between;padding:0 2.5rem;background:rgba(12,11,9,.95);backdrop-filter:blur(20px);border-bottom:1px solid var(--border)}
+.nav-logo{font-family:'Playfair Display',serif;font-size:1.6rem;font-weight:900;color:var(--cream);text-decoration:none;letter-spacing:-.02em}
+.nav-logo span{color:var(--amber)}
+.nav-links{display:flex;align-items:center;gap:2rem}
+.nav-links a{font-size:.8rem;font-weight:500;letter-spacing:.06em;text-transform:uppercase;color:var(--cream-d);text-decoration:none;transition:color .2s}
+.nav-links a:hover,.nav-links a.active{color:var(--cream)}
+.nav-cta{font-size:.78rem;font-weight:600;letter-spacing:.06em;text-transform:uppercase;color:var(--bg);background:var(--amber);padding:.5rem 1.2rem;text-decoration:none;transition:background .2s}
+.nav-cta:hover{background:var(--amber-d)}
+.nav-burger{display:none;background:none;border:none;color:var(--cream);font-size:1.4rem;padding:.25rem}
+.mobile-menu{display:none;position:fixed;top:64px;left:0;right:0;background:var(--bg2);border-bottom:1px solid var(--border);padding:1.5rem 2rem;z-index:199;flex-direction:column;gap:1.25rem}
+.mobile-menu.open{display:flex}
+.mobile-menu a{font-size:.9rem;color:var(--cream-d);text-decoration:none}
+.btn-primary{display:inline-flex;align-items:center;gap:.5rem;background:var(--amber);color:var(--bg);padding:.85rem 1.8rem;font-family:'Instrument Sans',sans-serif;font-size:.82rem;font-weight:600;letter-spacing:.07em;text-transform:uppercase;text-decoration:none;transition:background .2s,transform .15s;cursor:none;border:none}
+.btn-primary:hover{background:var(--amber-d);transform:translateY(-2px)}
+.btn-secondary{display:inline-flex;align-items:center;gap:.5rem;background:transparent;color:var(--cream-d);padding:.85rem 1.5rem;font-family:'Instrument Sans',sans-serif;font-size:.82rem;font-weight:500;border:1px solid var(--border2);text-decoration:none;transition:all .2s;cursor:none}
+.btn-secondary:hover{border-color:var(--cream-d);color:var(--cream)}
+
+/* ABOUT HERO */
+.about-hero{padding:9rem 2.5rem 6rem;background:var(--amber);position:relative;overflow:hidden;border-bottom:1px solid var(--border)}
+.about-hero::before{content:'';position:absolute;inset:0;background-image:linear-gradient(rgba(12,11,9,.08) 1px,transparent 1px),linear-gradient(90deg,rgba(12,11,9,.08) 1px,transparent 1px);background-size:60px 60px}
+.about-hero-inner{position:relative;z-index:1;max-width:900px;margin:0 auto;text-align:center}
+.about-hero h1{font-family:'Playfair Display',serif;font-size:clamp(3rem,7vw,6rem);font-weight:900;line-height:.95;letter-spacing:-.03em;color:var(--bg);margin-bottom:1.5rem}
+.about-hero h1 em{font-style:italic}
+.about-hero p{font-size:1.1rem;color:rgba(12,11,9,.7);max-width:560px;margin:0 auto;line-height:1.8}
+
+/* SECTIONS */
+.section{padding:6rem 2.5rem}
+.section-inner{max-width:1100px;margin:0 auto}
+.section-tag{display:inline-flex;align-items:center;gap:.5rem;font-size:.68rem;font-weight:600;letter-spacing:.14em;text-transform:uppercase;color:var(--amber);margin-bottom:1.25rem}
+.section-tag::before{content:'';width:20px;height:1px;background:var(--amber)}
+.section-headline{font-family:'Playfair Display',serif;font-size:clamp(2.2rem,4vw,3.2rem);font-weight:700;line-height:1.05;letter-spacing:-.02em;color:var(--cream);margin-bottom:1.25rem}
+.section-headline em{font-style:italic;color:var(--amber)}
+
+/* MISSION */
+.mission-grid{display:grid;grid-template-columns:1fr 1fr;gap:5rem;align-items:start;margin-top:1rem}
+.mission-text p{font-size:1rem;color:var(--cream-d);line-height:1.85;margin-bottom:1.5rem}
+.mission-text p strong{color:var(--cream)}
+.principles{display:flex;flex-direction:column;gap:1px;background:var(--border)}
+.principle{background:var(--surf1);padding:1.75rem;position:relative;overflow:hidden}
+.principle::before{content:'';position:absolute;left:0;top:0;bottom:0;width:3px;background:var(--amber)}
+.principle h3{font-size:.82rem;font-weight:600;letter-spacing:.08em;text-transform:uppercase;color:var(--cream);margin-bottom:.5rem}
+.principle p{font-size:.85rem;color:var(--muted);line-height:1.65}
+
+/* HOW WE WORK */
+.model-section{background:var(--bg2);border-top:1px solid var(--border);border-bottom:1px solid var(--border)}
+.model-blocks{display:grid;grid-template-columns:1fr 1fr 1fr;gap:1px;background:var(--border);margin-top:3.5rem}
+.model-block{background:var(--surf1);padding:2.5rem 2rem}
+.mb-label{font-size:.68rem;font-weight:600;letter-spacing:.14em;text-transform:uppercase;color:var(--amber);margin-bottom:1rem;display:block}
+.mb-head{font-family:'Playfair Display',serif;font-size:1.8rem;font-weight:700;color:var(--cream);margin-bottom:.75rem;line-height:1.1}
+.mb-body{font-size:.85rem;color:var(--muted);line-height:1.7}
+
+/* ROADMAP */
+.roadmap-section{background:var(--bg)}
+.timeline{display:flex;flex-direction:column;margin-top:3.5rem}
+.tl-item{display:grid;grid-template-columns:120px 1fr;gap:2rem;padding:2rem 0;border-bottom:1px solid var(--border);align-items:start}
+.tl-item:last-child{border-bottom:none}
+.tl-when{font-size:.72rem;font-weight:600;letter-spacing:.1em;text-transform:uppercase;color:var(--amber);padding-top:.3rem}
+.tl-content h3{font-size:.9rem;font-weight:600;color:var(--cream);margin-bottom:.4rem}
+.tl-content p{font-size:.85rem;color:var(--muted);line-height:1.65;max-width:580px}
+.tl-item.future .tl-when{color:var(--muted)}
+.tl-item.future .tl-content h3{color:var(--cream-d)}
+
+/* CONTACT */
+.contact-section{background:var(--surf1);border-top:1px solid var(--border)}
+.contact-grid{display:grid;grid-template-columns:1fr 1fr;gap:5rem;align-items:start}
+.contact-info p{font-size:.95rem;color:var(--cream-d);line-height:1.8;margin-bottom:2rem}
+.contact-items{display:flex;flex-direction:column;gap:1.25rem}
+.contact-item{font-size:.88rem;color:var(--cream-d)}
+.contact-item a{color:var(--amber);text-decoration:none}
+.contact-item a:hover{text-decoration:underline}
+.contact-form{background:var(--bg);border:1px solid var(--border2);padding:2.5rem}
+.contact-form h3{font-size:1rem;font-weight:600;color:var(--cream);margin-bottom:1.5rem}
+.cf-field{margin-bottom:1.25rem}
+.cf-field label{display:block;font-size:.72rem;font-weight:600;letter-spacing:.08em;text-transform:uppercase;color:var(--cream-d);margin-bottom:.4rem}
+.cf-field input,.cf-field select,.cf-field textarea{width:100%;background:var(--surf1);border:1px solid var(--border2);color:var(--cream);font-family:'Instrument Sans',sans-serif;font-size:.9rem;padding:.7rem 1rem;outline:none;transition:border-color .2s}
+.cf-field input:focus,.cf-field select:focus,.cf-field textarea:focus{border-color:var(--amber)}
+.cf-field input::placeholder,.cf-field textarea::placeholder{color:var(--muted)}
+.cf-field textarea{resize:vertical;min-height:100px;line-height:1.6}
+.cf-field select{-webkit-appearance:none;background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='8'%3E%3Cpath fill='%236a6458' d='M6 8L0 0h12z'/%3E%3C/svg%3E");background-repeat:no-repeat;background-position:right 1rem center;padding-right:2.5rem}
+.cf-field select option{background:var(--surf2)}
+.cf-success{display:none;background:rgba(94,196,94,.08);border:1px solid rgba(94,196,94,.25);padding:1rem;font-size:.85rem;color:var(--green);text-align:center;margin-top:1rem}
+
+/* CTA */
+.cta-section{background:var(--amber);padding:6rem 2.5rem;text-align:center;position:relative;overflow:hidden}
+.cta-section::before{content:'';position:absolute;inset:0;background-image:linear-gradient(rgba(12,11,9,.06) 1px,transparent 1px),linear-gradient(90deg,rgba(12,11,9,.06) 1px,transparent 1px);background-size:60px 60px}
+.cta-inner{position:relative;z-index:1}
+.cta-section h2{font-family:'Playfair Display',serif;font-size:clamp(2.5rem,5vw,4rem);font-weight:900;color:var(--bg);line-height:1.0;letter-spacing:-.03em;margin-bottom:1rem}
+.cta-section p{font-size:.95rem;color:rgba(12,11,9,.65);max-width:440px;margin:0 auto 2.5rem;line-height:1.7}
+.btn-dark{display:inline-flex;align-items:center;gap:.5rem;background:var(--bg);color:var(--amber);padding:.85rem 1.8rem;font-family:'Instrument Sans',sans-serif;font-size:.82rem;font-weight:600;letter-spacing:.07em;text-transform:uppercase;text-decoration:none;transition:all .2s;cursor:none}
+.btn-dark:hover{background:var(--bg2)}
+
+footer{background:var(--bg2);border-top:1px solid var(--border);padding:4rem 2.5rem 2rem}
+.footer-inner{max-width:1100px;margin:0 auto}
+.footer-top{display:grid;grid-template-columns:1.5fr 1fr 1fr 1fr;gap:3rem;margin-bottom:3rem}
+.footer-brand p{font-size:.83rem;color:var(--muted);line-height:1.65;max-width:220px;margin-top:1rem}
+.footer-col h4{font-size:.7rem;font-weight:600;letter-spacing:.12em;text-transform:uppercase;color:var(--cream-d);margin-bottom:1rem}
+.footer-col a{display:block;font-size:.83rem;color:var(--muted);text-decoration:none;margin-bottom:.6rem;transition:color .2s}
+.footer-col a:hover{color:var(--cream-d)}
+.footer-bottom{display:flex;align-items:center;justify-content:space-between;padding-top:2rem;border-top:1px solid var(--border);font-size:.75rem;color:var(--muted)}
+
+.reveal{opacity:0;transform:translateY(24px);transition:opacity .6s ease,transform .6s ease}
+.reveal.visible{opacity:1;transform:translateY(0)}
+
+@media(max-width:1024px){.mission-grid,.contact-grid{grid-template-columns:1fr;gap:3rem}.model-blocks{grid-template-columns:1fr}.footer-top{grid-template-columns:1fr 1fr}}
+@media(max-width:768px){nav{padding:0 1.2rem}.nav-links,.nav-right{display:none}.nav-burger{display:block}.about-hero,.section{padding:4rem 1.5rem}.tl-item{grid-template-columns:1fr;gap:.4rem}.tl-when{padding-top:0}.footer-top{grid-template-columns:1fr}.footer-bottom{flex-direction:column;gap:.5rem;text-align:center}}
+</style>
+</head>
+<body>
+<div class="cursor" id="cursor"></div>
+<div class="cursor-ring" id="cursorRing"></div>
+
+<nav>
+  <a href="index.html" class="nav-logo">cllctd<span>.</span></a>
+  <div class="nav-links">
+    <a href="index.html">Home</a>
+    <a href="vendors.html">For Vendors</a>
+    <a href="buyers.html">For Buyers</a>
+    <a href="about.html" class="active">About</a>
+  </div>
+  <div class="nav-right"><a href="apply.html" class="nav-cta">Apply as Vendor →</a></div>
+  <button class="nav-burger" onclick="toggleMenu()">☰</button>
+</nav>
+<div class="mobile-menu" id="mobileMenu">
+  <a href="index.html">Home</a>
+  <a href="vendors.html">For Vendors</a>
+  <a href="buyers.html">For Buyers</a>
+  <a href="about.html">About</a>
+  <a href="apply.html" style="color:var(--amber)">Apply as Vendor →</a>
+</div>
+
+<div class="about-hero">
+  <div class="about-hero-inner">
+    <h1>Data that was<br><em>collected.</em><br>Not scraped.</h1>
+    <p>cllctd is a two-sided AI data marketplace headquartered in Dubai, sourcing from India. We exist because the world's AI models are missing 1.4 billion people.</p>
+  </div>
+</div>
+
+<!-- MISSION -->
+<section class="section" id="model">
+  <div class="section-inner">
+    <div class="section-tag reveal">Our Mission</div>
+    <h2 class="section-headline reveal">Why we built<br><em>cllctd.</em></h2>
+    <div class="mission-grid">
+      <div class="mission-text reveal">
+        <p>Every major AI model in production today was trained almost exclusively on data from North America, Western Europe, and East Asia. India — with 1 in 5 people on earth — is a ghost in the training data.</p>
+        <p>This isn't a minor gap. It means <strong>speech models that fail for Hindi and Tamil speakers</strong>. It means <strong>robotics systems untrained on the environments where billions of workers operate</strong>. It means AI that works well for a minority of the world and poorly for everyone else.</p>
+        <p>cllctd is the marketplace that closes this gap. We connect India's hardware vendors, voice networks, and worker communities with the AI companies that need their data — while ensuring people who generate that data are compensated fairly.</p>
+        <p><strong>Data that was collected. Not scraped. That's not a tagline. It's the entire business.</strong></p>
+      </div>
+      <div class="principles reveal">
+        <div class="principle">
+          <h3>Consent First</h3>
+          <p>Every dataset on cllctd carries verified consent documentation. No grey areas. No "publicly available" rationalisations. If a person's data is being used, they agreed to it.</p>
+        </div>
+        <div class="principle">
+          <h3>Vendor-First Economics</h3>
+          <p>70% of every deal goes to the vendor. We take 30% to operate. This isn't charity — it's the only model that builds a lasting supply side worth having.</p>
+        </div>
+        <div class="principle">
+          <h3>Niche Before Scale</h3>
+          <p>We go deep on specific verticals — egocentric worker data, regional voice, institutional archives — where margins are high and moats are real.</p>
+        </div>
+        <div class="principle">
+          <h3>Dubai Licences. India Supplies.</h3>
+          <p>Our ADGM/DIFC structure provides clean IP for global buyers. Our India sourcing provides diversity, volume, and cost advantage no Western marketplace can replicate.</p>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- HOW WE WORK -->
+<section class="section model-section">
+  <div class="section-inner">
+    <div class="section-tag reveal">The Model</div>
+    <h2 class="section-headline reveal">How cllctd works<br><em>structurally.</em></h2>
+    <div class="model-blocks">
+      <div class="model-block reveal">
+        <span class="mb-label">Supply Side</span>
+        <div class="mb-head">India Supplies</div>
+        <p class="mb-body">Hardware vendors, voice networks, worker communities, and institutional archives in India provide the raw material. Consent-verified, documented, submitted through our onboarding portal. We work with vendors to build compliant frameworks where needed.</p>
+      </div>
+      <div class="model-block reveal">
+        <span class="mb-label">Platform</span>
+        <div class="mb-head">cllctd Packages</div>
+        <p class="mb-body">We annotate, enrich, QA, and format raw vendor submissions into enterprise-grade datasets. Our legal team handles consent verification and rights documentation. Our sales team matches datasets with active buyer demand and manages deal flow end to end.</p>
+      </div>
+      <div class="model-block reveal">
+        <span class="mb-label">Demand Side</span>
+        <div class="mb-head">The World Buys</div>
+        <p class="mb-body">AI labs, robotics companies, and Gulf sovereign AI funds license datasets through our ADGM/DIFC entity. Clean IP, zero tax on royalties, and direct access to buyers like G42, MGX, and SDAIA who need India-origin data and trust UAE legal structures.</p>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ROADMAP -->
+<section class="section roadmap-section" id="roadmap">
+  <div class="section-inner">
+    <div class="section-tag reveal">Roadmap</div>
+    <h2 class="section-headline reveal">Where we are.<br><em>Where we're going.</em></h2>
+    <div class="timeline">
+      <div class="tl-item reveal">
+        <div class="tl-when">Q1 2026</div>
+        <div class="tl-content"><h3>Platform Launch &amp; Pre-Seed Raise</h3><p>Landing page, vendor onboarding portal, and brand identity live. Pre-seed fundraise underway ($2M, $12M cap SAFE). First vendor conversations active.</p></div>
+      </div>
+      <div class="tl-item reveal">
+        <div class="tl-when">Q2 2026</div>
+        <div class="tl-content"><h3>First Vendor Agreements &amp; Enterprise Deals</h3><p>Hardware vendor agreements signed. First annotated datasets in catalogue. First enterprise licensing deal closes. Revenue begins. ADGM entity established.</p></div>
+      </div>
+      <div class="tl-item reveal">
+        <div class="tl-when">Q3 2026</div>
+        <div class="tl-content"><h3>Voice Network Expansion</h3><p>India voice recording networks onboarded across Hindi, Tamil, Telugu, Bengali. Catalogue expands to 20+ listed datasets. Gulf sovereign buyer pipeline activated.</p></div>
+      </div>
+      <div class="tl-item future reveal">
+        <div class="tl-when">Q4 2026</div>
+        <div class="tl-content"><h3>Consumer App Launch</h3><p>Mobile app launches in India — iOS and Android. UPI payouts. Task-based data contribution campaigns. First 10,000 active contributors.</p></div>
+      </div>
+      <div class="tl-item future reveal">
+        <div class="tl-when">2027</div>
+        <div class="tl-content"><h3>Series A &amp; Scale</h3><p>Series A raise ($6–8M target). Arabic-language data expansion for Gulf buyers. Automated annotation pipeline. 50+ enterprise buyers. Recurring subscription model.</p></div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- CONTACT -->
+<section class="section contact-section" id="contact">
+  <div class="section-inner">
+    <div class="contact-grid">
+      <div class="reveal">
+        <div class="section-tag">Get in Touch</div>
+        <h2 class="section-headline">Let's talk.</h2>
+        <p class="contact-info" style="font-size:.95rem;color:var(--cream-d);line-height:1.8;margin-bottom:2rem">Whether you're a potential vendor, buyer, investor, or just curious — we reply to everything personally.</p>
+        <div class="contact-items">
+          <div class="contact-item">📧 General — <a href="mailto:hello@cllctd.ai">hello@cllctd.ai</a></div>
+          <div class="contact-item">📦 Vendors — <a href="mailto:vendors@cllctd.ai">vendors@cllctd.ai</a></div>
+          <div class="contact-item">💼 Buyers — <a href="mailto:buyers@cllctd.ai">buyers@cllctd.ai</a></div>
+          <div class="contact-item">💰 Investors — <a href="mailto:investors@cllctd.ai">investors@cllctd.ai</a></div>
+          <div class="contact-item">📍 Dubai, UAE · ADGM/DIFC registered</div>
+        </div>
+      </div>
+      <div class="contact-form reveal">
+        <h3>Send us a message</h3>
+        <div class="cf-field"><label>Your name</label><input type="text" id="cfName" placeholder="Full name"></div>
+        <div class="cf-field"><label>Email</label><input type="email" id="cfEmail" placeholder="you@company.com"></div>
+        <div class="cf-field">
+          <label>I am a…</label>
+          <select id="cfType">
+            <option value="">Select one</option>
+            <option>Data vendor</option>
+            <option>Enterprise buyer</option>
+            <option>Investor</option>
+            <option>Press / Media</option>
+            <option>Just curious</option>
+          </select>
+        </div>
+        <div class="cf-field"><label>Message</label><textarea id="cfMsg" placeholder="Tell us what you're working on..."></textarea></div>
+        <button class="btn-primary" onclick="submitContact()" style="width:100%;justify-content:center">Send Message →</button>
+        <div class="cf-success" id="cfSuccess">✓ Message sent. We'll be in touch within 2 business days.</div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<section class="cta-section">
+  <div class="cta-inner">
+    <h2>Ready to get started?</h2>
+    <p>Apply as a vendor or get in touch with our buyer team. We respond to everything personally.</p>
+    <a href="apply.html" class="btn-dark">Apply as Vendor →</a>
+  </div>
+</section>
+
+<footer>
+  <div class="footer-inner">
+    <div class="footer-top">
+      <div class="footer-brand"><a href="index.html" class="nav-logo">cllctd<span>.</span></a><p>The world's first niche AI data marketplace for emerging markets.</p></div>
+      <div class="footer-col"><h4>Platform</h4><a href="vendors.html">For Vendors</a><a href="buyers.html">For Buyers</a><a href="apply.html">Apply Now</a></div>
+      <div class="footer-col"><h4>Company</h4><a href="about.html">About</a><a href="about.html#contact">Contact</a></div>
+      <div class="footer-col"><h4>Legal</h4><a href="#">Terms</a><a href="#">Privacy Policy</a><a href="#">Data Ethics</a></div>
+    </div>
+    <div class="footer-bottom"><span>© 2026 cllctd. Dubai, UAE.</span><span>hello@cllctd.ai</span></div>
+  </div>
+</footer>
+
+<script>
+const cursor=document.getElementById('cursor'),ring=document.getElementById('cursorRing');
+document.addEventListener('mousemove',e=>{cursor.style.left=e.clientX+'px';cursor.style.top=e.clientY+'px';ring.style.left=e.clientX+'px';ring.style.top=e.clientY+'px'});
+document.querySelectorAll('a,button').forEach(el=>{el.addEventListener('mouseenter',()=>{cursor.style.transform='translate(-50%,-50%) scale(2.5)';ring.style.opacity='0'});el.addEventListener('mouseleave',()=>{cursor.style.transform='translate(-50%,-50%) scale(1)';ring.style.opacity='1'})});
+function toggleMenu(){document.getElementById('mobileMenu').classList.toggle('open')}
+function submitContact(){
+  const name=document.getElementById('cfName').value.trim();
+  const email=document.getElementById('cfEmail').value.trim();
+  if(!name||!email){alert('Please fill in your name and email.');return;}
+  document.getElementById('cfSuccess').style.display='block';
+  document.querySelectorAll('.cf-field input,.cf-field select,.cf-field textarea').forEach(el=>el.value='');
+}
+const observer=new IntersectionObserver(entries=>{entries.forEach(e=>{if(e.isIntersecting)e.target.classList.add('visible')})},{threshold:.1,rootMargin:'0px 0px -40px 0px'});
+document.querySelectorAll('.reveal').forEach(el=>observer.observe(el));
+</script>
+</body>
+</html>

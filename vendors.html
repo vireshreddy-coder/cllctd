@@ -1,0 +1,290 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>cllctd — For Data Vendors</title>
+<meta name="description" content="Apply to list your data on cllctd and earn 70% of every enterprise licensing deal. Hardware vendors, voice networks, institutional archives welcome.">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,400;0,700;0,900;1,400&family=Instrument+Sans:wght@300;400;500;600&display=swap" rel="stylesheet">
+<style>
+*,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
+:root{--bg:#0c0b09;--bg2:#111009;--surf1:#161410;--surf2:#1c1a14;--border:#2a2720;--border2:#333028;--amber:#f0a832;--amber-d:#d49020;--amber-bg:#1e1608;--cream:#f5f0e8;--cream-d:#b8b0a0;--muted:#6a6458;--green:#5ec45e}
+html{scroll-behavior:smooth}
+body{background:var(--bg);color:var(--cream);font-family:'Instrument Sans',sans-serif;line-height:1.6;overflow-x:hidden;cursor:none}
+.cursor{position:fixed;top:0;left:0;z-index:9999;width:10px;height:10px;background:var(--amber);border-radius:50%;pointer-events:none;transform:translate(-50%,-50%);transition:transform .15s}
+.cursor-ring{position:fixed;top:0;left:0;z-index:9998;width:32px;height:32px;border:1px solid rgba(240,168,50,.35);border-radius:50%;pointer-events:none;transform:translate(-50%,-50%);transition:transform .35s,opacity .2s}
+a,button{cursor:none}
+nav{position:fixed;top:0;left:0;right:0;z-index:200;height:64px;display:flex;align-items:center;justify-content:space-between;padding:0 2.5rem;background:rgba(12,11,9,.95);backdrop-filter:blur(20px);border-bottom:1px solid var(--border)}
+.nav-logo{font-family:'Playfair Display',serif;font-size:1.6rem;font-weight:900;color:var(--cream);text-decoration:none;letter-spacing:-.02em}
+.nav-logo span{color:var(--amber)}
+.nav-links{display:flex;align-items:center;gap:2rem}
+.nav-links a{font-size:.8rem;font-weight:500;letter-spacing:.06em;text-transform:uppercase;color:var(--cream-d);text-decoration:none;transition:color .2s}
+.nav-links a:hover,.nav-links a.active{color:var(--cream)}
+.nav-cta{font-size:.78rem;font-weight:600;letter-spacing:.06em;text-transform:uppercase;color:var(--bg);background:var(--amber);padding:.5rem 1.2rem;text-decoration:none;transition:background .2s}
+.nav-cta:hover{background:var(--amber-d)}
+.nav-burger{display:none;background:none;border:none;color:var(--cream);font-size:1.4rem;padding:.25rem}
+.mobile-menu{display:none;position:fixed;top:64px;left:0;right:0;background:var(--bg2);border-bottom:1px solid var(--border);padding:1.5rem 2.5rem;z-index:199;flex-direction:column;gap:1.25rem}
+.mobile-menu.open{display:flex}
+.mobile-menu a{font-size:.9rem;color:var(--cream-d);text-decoration:none}
+.btn-primary{display:inline-flex;align-items:center;gap:.5rem;background:var(--amber);color:var(--bg);padding:.85rem 1.8rem;font-family:'Instrument Sans',sans-serif;font-size:.82rem;font-weight:600;letter-spacing:.07em;text-transform:uppercase;border:none;text-decoration:none;transition:background .2s,transform .15s;cursor:none}
+.btn-primary:hover{background:var(--amber-d);transform:translateY(-2px)}
+.btn-secondary{display:inline-flex;align-items:center;gap:.5rem;background:transparent;color:var(--cream-d);padding:.85rem 1.5rem;font-family:'Instrument Sans',sans-serif;font-size:.82rem;font-weight:500;border:1px solid var(--border2);text-decoration:none;transition:all .2s;cursor:none}
+.btn-secondary:hover{border-color:var(--cream-d);color:var(--cream)}
+.btn-dark{display:inline-flex;align-items:center;gap:.5rem;background:var(--bg);color:var(--amber);padding:.85rem 1.8rem;font-family:'Instrument Sans',sans-serif;font-size:.82rem;font-weight:600;letter-spacing:.07em;text-transform:uppercase;text-decoration:none;transition:all .2s;cursor:none}
+.btn-dark:hover{background:var(--bg2)}
+.page-hero{padding:9rem 2.5rem 6rem;background:var(--bg);position:relative;overflow:hidden;border-bottom:1px solid var(--border)}
+.page-hero::before{content:'';position:absolute;inset:0;background-image:linear-gradient(var(--border) 1px,transparent 1px),linear-gradient(90deg,var(--border) 1px,transparent 1px);background-size:80px 80px;opacity:.2}
+.page-hero-inner{position:relative;z-index:1;max-width:1100px;margin:0 auto;display:grid;grid-template-columns:1fr 1fr;gap:5rem;align-items:center}
+.page-tag{display:inline-flex;align-items:center;gap:.5rem;font-size:.68rem;font-weight:600;letter-spacing:.14em;text-transform:uppercase;color:var(--amber);margin-bottom:1.25rem}
+.page-tag::before{content:'';width:20px;height:1px;background:var(--amber)}
+.page-hero h1{font-family:'Playfair Display',serif;font-size:clamp(3rem,5vw,5rem);font-weight:900;line-height:.95;letter-spacing:-.03em;color:var(--cream);margin-bottom:1.5rem}
+.page-hero h1 em{font-style:italic;color:var(--amber)}
+.page-hero p{font-size:1rem;color:var(--cream-d);line-height:1.8;margin-bottom:2rem}
+.hero-earn-box{background:var(--surf1);border:1px solid var(--border2);padding:2.5rem}
+.earn-label{font-size:.68rem;font-weight:600;letter-spacing:.14em;text-transform:uppercase;color:var(--muted);margin-bottom:.75rem;display:block}
+.earn-val{font-family:'Playfair Display',serif;font-size:5rem;font-weight:900;color:var(--amber);line-height:1;margin-bottom:.25rem}
+.earn-sub{font-size:.85rem;color:var(--cream-d);margin-bottom:2rem;padding-bottom:2rem;border-bottom:1px solid var(--border)}
+.earn-items{display:flex;flex-direction:column;gap:.75rem}
+.earn-item{display:flex;align-items:center;justify-content:space-between;font-size:.83rem}
+.earn-item-label{color:var(--muted)}
+.earn-item-val{color:var(--cream);font-weight:500}
+section{padding:6rem 2.5rem}
+.section-inner{max-width:1100px;margin:0 auto}
+.section-tag{display:inline-flex;align-items:center;gap:.5rem;font-size:.68rem;font-weight:600;letter-spacing:.14em;text-transform:uppercase;color:var(--amber);margin-bottom:1.25rem}
+.section-tag::before{content:'';width:20px;height:1px;background:var(--amber)}
+.section-headline{font-family:'Playfair Display',serif;font-size:clamp(2.2rem,4vw,3.2rem);font-weight:700;line-height:1.05;letter-spacing:-.02em;color:var(--cream);margin-bottom:1.25rem}
+.section-headline em{font-style:italic;color:var(--amber)}
+.vtype-grid{display:grid;grid-template-columns:repeat(4,1fr);gap:1px;background:var(--border);margin-top:3.5rem}
+.vtype-card{background:var(--surf1);padding:2rem;position:relative;overflow:hidden;transition:background .2s}
+.vtype-card:hover{background:var(--surf2)}
+.vtype-card::after{content:'';position:absolute;top:0;left:0;right:0;height:3px;background:var(--amber);transform:scaleX(0);transform-origin:left;transition:transform .3s}
+.vtype-card:hover::after{transform:scaleX(1)}
+.vtype-icon{font-size:2rem;margin-bottom:1.25rem;display:block}
+.vtype-card h3{font-size:.85rem;font-weight:600;letter-spacing:.06em;text-transform:uppercase;color:var(--cream);margin-bottom:.6rem}
+.vtype-card p{font-size:.85rem;color:var(--muted);line-height:1.65;margin-bottom:.75rem}
+.vtype-card .desc{font-size:.83rem;color:var(--cream-d);line-height:1.6;margin-bottom:1rem}
+.vtype-deal{font-size:.78rem;color:var(--amber);font-weight:500;padding:.25rem .6rem;background:var(--amber-bg);display:inline-block}
+.process-section{background:var(--bg2);border-top:1px solid var(--border);border-bottom:1px solid var(--border)}
+.process-steps{margin-top:3.5rem}
+.process-step{display:grid;grid-template-columns:80px 1fr auto;gap:2rem;align-items:start;padding:2rem 0;border-bottom:1px solid var(--border)}
+.process-step:last-child{border-bottom:none}
+.ps-num{font-family:'Playfair Display',serif;font-size:3rem;font-weight:900;color:var(--border2);line-height:1}
+.ps-content h3{font-size:.9rem;font-weight:600;letter-spacing:.06em;text-transform:uppercase;color:var(--cream);margin-bottom:.5rem}
+.ps-content p{font-size:.88rem;color:var(--muted);line-height:1.65;max-width:540px}
+.ps-duration{font-size:.72rem;font-weight:600;letter-spacing:.08em;text-transform:uppercase;color:var(--amber);background:var(--amber-bg);padding:.3rem .8rem;white-space:nowrap;height:fit-content;margin-top:.25rem}
+.earnings-section{background:var(--surf1);border-bottom:1px solid var(--border)}
+.earnings-grid{display:grid;grid-template-columns:1fr 1fr;gap:5rem;align-items:start;margin-top:3.5rem}
+.earnings-table{background:var(--bg);border:1px solid var(--border2);overflow:hidden}
+.et-header{background:var(--surf2);padding:.75rem 1.25rem;display:grid;grid-template-columns:1fr 1fr 1fr;font-size:.7rem;font-weight:600;letter-spacing:.1em;text-transform:uppercase;color:var(--muted);border-bottom:1px solid var(--border)}
+.et-row{display:grid;grid-template-columns:1fr 1fr 1fr;padding:1rem 1.25rem;border-bottom:1px solid var(--border);font-size:.85rem;align-items:center}
+.et-row:last-child{border-bottom:none}
+.et-row:hover{background:var(--surf1)}
+.et-type{color:var(--cream-d)}
+.et-range{color:var(--cream);font-weight:500}
+.et-earn{color:var(--amber);font-weight:600}
+.payout-methods{margin-top:2rem}
+.pm-label{font-size:.72rem;font-weight:600;letter-spacing:.1em;text-transform:uppercase;color:var(--muted);margin-bottom:.75rem}
+.pm-chips{display:flex;flex-wrap:wrap;gap:.5rem}
+.pm-chip{font-size:.78rem;padding:.35rem .8rem;background:var(--surf2);border:1px solid var(--border);color:var(--cream-d)}
+.earnings-text p{font-size:.92rem;color:var(--cream-d);line-height:1.8;margin-bottom:1.25rem}
+.faq-section{background:var(--bg)}
+.faq-grid{display:grid;grid-template-columns:1fr 1fr;gap:1px;background:var(--border);margin-top:3.5rem}
+.faq-item{background:var(--surf1);padding:2rem}
+.faq-item h3{font-size:.88rem;font-weight:600;color:var(--cream);margin-bottom:.6rem}
+.faq-item p{font-size:.85rem;color:var(--muted);line-height:1.7}
+.cta-section{background:var(--amber);padding:6rem 2.5rem;text-align:center;position:relative;overflow:hidden}
+.cta-section::before{content:'';position:absolute;inset:0;background-image:linear-gradient(rgba(12,11,9,.06) 1px,transparent 1px),linear-gradient(90deg,rgba(12,11,9,.06) 1px,transparent 1px);background-size:60px 60px}
+.cta-inner{position:relative;z-index:1}
+.cta-section h2{font-family:'Playfair Display',serif;font-size:clamp(2.5rem,5vw,4rem);font-weight:900;color:var(--bg);line-height:1.0;letter-spacing:-.03em;margin-bottom:1rem}
+.cta-section p{font-size:.95rem;color:rgba(12,11,9,.65);max-width:440px;margin:0 auto 2.5rem;line-height:1.7}
+footer{background:var(--bg2);border-top:1px solid var(--border);padding:4rem 2.5rem 2rem}
+.footer-inner{max-width:1100px;margin:0 auto}
+.footer-top{display:grid;grid-template-columns:1.5fr 1fr 1fr 1fr;gap:3rem;margin-bottom:3rem}
+.footer-brand p{font-size:.83rem;color:var(--muted);line-height:1.65;max-width:220px;margin-top:1rem}
+.footer-col h4{font-size:.7rem;font-weight:600;letter-spacing:.12em;text-transform:uppercase;color:var(--cream-d);margin-bottom:1rem}
+.footer-col a{display:block;font-size:.83rem;color:var(--muted);text-decoration:none;margin-bottom:.6rem;transition:color .2s}
+.footer-col a:hover{color:var(--cream-d)}
+.footer-bottom{display:flex;align-items:center;justify-content:space-between;padding-top:2rem;border-top:1px solid var(--border);font-size:.75rem;color:var(--muted)}
+.reveal{opacity:0;transform:translateY(24px);transition:opacity .6s ease,transform .6s ease}
+.reveal.visible{opacity:1;transform:translateY(0)}
+@media(max-width:1024px){.page-hero-inner,.earnings-grid{grid-template-columns:1fr;gap:3rem}.vtype-grid{grid-template-columns:1fr 1fr}.footer-top{grid-template-columns:1fr 1fr}}
+@media(max-width:768px){nav{padding:0 1.2rem}.nav-links,.nav-right{display:none}.nav-burger{display:block}.page-hero{padding:5rem 1.5rem 4rem}section{padding:4rem 1.5rem}.vtype-grid{grid-template-columns:1fr}.faq-grid{grid-template-columns:1fr}.process-step{grid-template-columns:50px 1fr}.ps-duration{display:none}.footer-top{grid-template-columns:1fr}.footer-bottom{flex-direction:column;gap:.5rem;text-align:center}}
+</style>
+</head>
+<body>
+<div class="cursor" id="cursor"></div>
+<div class="cursor-ring" id="cursorRing"></div>
+<nav>
+  <a href="index.html" class="nav-logo">cllctd<span>.</span></a>
+  <div class="nav-links">
+    <a href="index.html">Home</a>
+    <a href="vendors.html" class="active">For Vendors</a>
+    <a href="buyers.html">For Buyers</a>
+    <a href="about.html">About</a>
+  </div>
+  <div class="nav-right"><a href="apply.html" class="nav-cta">Apply Now →</a></div>
+  <button class="nav-burger" onclick="toggleMenu()">☰</button>
+</nav>
+<div class="mobile-menu" id="mobileMenu">
+  <a href="index.html">Home</a>
+  <a href="vendors.html">For Vendors</a>
+  <a href="buyers.html">For Buyers</a>
+  <a href="about.html">About</a>
+  <a href="apply.html" style="color:var(--amber)">Apply Now →</a>
+</div>
+
+<div class="page-hero">
+  <div class="page-hero-inner">
+    <div>
+      <div class="page-tag">For Data Vendors</div>
+      <h1>Your data.<br><em>Your terms.</em><br>Enterprise prices.</h1>
+      <p>cllctd lists your data in front of the world's leading AI labs, robotics companies, and Gulf sovereign AI funds. You supply it. We sell it. You keep 70%.</p>
+      <div style="display:flex;gap:1rem;flex-wrap:wrap">
+        <a href="apply.html" class="btn-primary">Start Application →</a>
+        <a href="#process" class="btn-secondary">How it works ↓</a>
+      </div>
+    </div>
+    <div class="hero-earn-box reveal">
+      <span class="earn-label">Vendor Revenue Share</span>
+      <div class="earn-val">70%</div>
+      <p class="earn-sub">of every licensing deal goes directly to the vendor</p>
+      <div class="earn-items">
+        <div class="earn-item"><span class="earn-item-label">Average deal size</span><span class="earn-item-val">$50K – $300K</span></div>
+        <div class="earn-item"><span class="earn-item-label">Time to first deal</span><span class="earn-item-val">3–6 weeks</span></div>
+        <div class="earn-item"><span class="earn-item-label">Payment methods</span><span class="earn-item-val">Bank, UPI, Crypto</span></div>
+        <div class="earn-item"><span class="earn-item-label">Application review</span><span class="earn-item-val">5 business days</span></div>
+        <div class="earn-item"><span class="earn-item-label">Exclusivity premium</span><span class="earn-item-val">+40% on deal price</span></div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<section>
+  <div class="section-inner">
+    <div class="section-tag reveal">Vendor Categories</div>
+    <h2 class="section-headline reveal">Four types of vendor.<br><em>One marketplace.</em></h2>
+    <div class="vtype-grid">
+      <div class="vtype-card reveal">
+        <span class="vtype-icon">🎥</span>
+        <h3>Hardware Vendors</h3>
+        <p>Egocentric cameras, smart glasses, wearables, or industrial sensors capturing real-world footage at scale.</p>
+        <p class="desc">Robotics and embodied AI buyers specifically request this category. Highest average deal size on the platform.</p>
+        <span class="vtype-deal">Deal size: $80K – $500K</span>
+      </div>
+      <div class="vtype-card reveal">
+        <span class="vtype-icon">🎙️</span>
+        <h3>Voice &amp; Audio Networks</h3>
+        <p>Structured recording networks across Indian languages — Hindi, Tamil, Telugu, Bengali, Marathi, Kannada, and others.</p>
+        <p class="desc">Regional language voice data is among the scarcest and most valuable categories. Every major LLM lab is actively seeking it.</p>
+        <span class="vtype-deal">Deal size: $30K – $200K</span>
+      </div>
+      <div class="vtype-card reveal">
+        <span class="vtype-icon">🏢</span>
+        <h3>Institutional Archives</h3>
+        <p>Hospitals, studios, corporates, and government bodies with licensed datasets — medical records, video archives, audio libraries.</p>
+        <p class="desc">Institutional data commands a premium because provenance is already established. Our legal team assists with remaining consent work.</p>
+        <span class="vtype-deal">Deal size: $100K – $1M+</span>
+      </div>
+      <div class="vtype-card reveal">
+        <span class="vtype-icon">📱</span>
+        <h3>Contributor Networks</h3>
+        <p>Communities of individual contributors — gig workers, creator panels, recording groups — generating task-specific data on demand.</p>
+        <p class="desc">Network operators earn on top of contributor payouts. cllctd handles buyer matching, task specs, and QA.</p>
+        <span class="vtype-deal">Deal size: $20K – $120K</span>
+      </div>
+    </div>
+  </div>
+</section>
+
+<section class="process-section" id="process">
+  <div class="section-inner">
+    <div class="section-tag reveal">The Process</div>
+    <h2 class="section-headline reveal">From application<br>to <em>paid.</em></h2>
+    <div class="process-steps">
+      <div class="process-step reveal"><div class="ps-num">01</div><div class="ps-content"><h3>Apply Online</h3><p>Complete our vendor application — vendor type, organisation details, data profile, consent framework. Takes about 15 minutes. Reviewed personally by our team.</p></div><div class="ps-duration">Day 1</div></div>
+      <div class="process-step reveal"><div class="ps-num">02</div><div class="ps-content"><h3>Application Review</h3><p>We review your profile against current buyer demand, check consent documentation, and assess marketplace fit. You'll hear back within 5 business days.</p></div><div class="ps-duration">Days 1–5</div></div>
+      <div class="process-step reveal"><div class="ps-num">03</div><div class="ps-content"><h3>Onboarding Call</h3><p>30-minute call to discuss dataset specs, pricing strategy, exclusivity options, and any legal framework setup needed.</p></div><div class="ps-duration">Days 5–10</div></div>
+      <div class="process-step reveal"><div class="ps-num">04</div><div class="ps-content"><h3>Listing Agreement &amp; Sample</h3><p>Sign the vendor agreement, submit a sample dataset for QA, set pricing preferences. Our annotation team enriches the sample for buyer preview.</p></div><div class="ps-duration">Week 2–3</div></div>
+      <div class="process-step reveal"><div class="ps-num">05</div><div class="ps-content"><h3>Go Live &amp; Match</h3><p>Dataset listed in marketplace. Buyer matching and sales team connect your data with active enterprise buyers. Average time to first deal: 3–6 weeks.</p></div><div class="ps-duration">Week 3+</div></div>
+    </div>
+  </div>
+</section>
+
+<section class="earnings-section">
+  <div class="section-inner">
+    <div class="section-tag reveal">Earnings</div>
+    <h2 class="section-headline reveal">What vendors<br><em>actually earn.</em></h2>
+    <div class="earnings-grid">
+      <div class="reveal">
+        <div class="earnings-table">
+          <div class="et-header"><span>Vendor Type</span><span>Deal Range</span><span>You Get (70%)</span></div>
+          <div class="et-row"><div class="et-type">Hardware / Egocentric</div><div class="et-range">$80K–$500K</div><div class="et-earn">$56K–$350K</div></div>
+          <div class="et-row"><div class="et-type">Voice / Audio Network</div><div class="et-range">$30K–$200K</div><div class="et-earn">$21K–$140K</div></div>
+          <div class="et-row"><div class="et-type">Institutional Archive</div><div class="et-range">$100K–$1M+</div><div class="et-earn">$70K–$700K+</div></div>
+          <div class="et-row"><div class="et-type">Contributor Network</div><div class="et-range">$20K–$120K</div><div class="et-earn">$14K–$84K</div></div>
+        </div>
+        <div class="payout-methods">
+          <p class="pm-label">Payout Methods</p>
+          <div class="pm-chips">
+            <span class="pm-chip">Bank Transfer (SWIFT)</span>
+            <span class="pm-chip">UPI (India)</span>
+            <span class="pm-chip">USDC / Solana</span>
+            <span class="pm-chip">NEFT / RTGS</span>
+          </div>
+        </div>
+      </div>
+      <div class="earnings-text reveal">
+        <p>cllctd takes 30% to cover annotation, QA, legal, enterprise sales, and ongoing marketplace listing. Once listed, a dataset can be re-licensed to multiple buyers — recurring revenue without additional work from you.</p>
+        <p>Exclusive listings command a 40% premium. You earn more per deal in exchange for not licensing the same dataset elsewhere simultaneously.</p>
+        <a href="apply.html" class="btn-primary" style="margin-top:.5rem">Start Earning — Apply Now →</a>
+      </div>
+    </div>
+  </div>
+</section>
+
+<section class="faq-section">
+  <div class="section-inner">
+    <div class="section-tag reveal">Common Questions</div>
+    <h2 class="section-headline reveal">What vendors<br><em>ask us.</em></h2>
+    <div class="faq-grid">
+      <div class="faq-item reveal"><h3>Do I need a registered company to apply?</h3><p>No — individuals and unregistered networks can apply. We recommend having a registered entity before the first deal closes as enterprise buyers require invoices. We can help.</p></div>
+      <div class="faq-item reveal"><h3>What if I don't have consent documentation yet?</h3><p>Apply anyway. "Not yet established" is a valid answer. Our legal team provides consent framework templates and guidance to get you compliant.</p></div>
+      <div class="faq-item reveal"><h3>Can I list on cllctd and sell directly to buyers too?</h3><p>Yes. Non-exclusive listings allow you to license through multiple channels. Only disclose prior licensing when a buyer requests exclusivity.</p></div>
+      <div class="faq-item reveal"><h3>How does cllctd handle my data during QA?</h3><p>Sample datasets are reviewed in a secure environment. Raw data is never shared with buyers until a licensing agreement is signed. You retain ownership throughout.</p></div>
+      <div class="faq-item reveal"><h3>What languages and regions do you prioritise?</h3><p>Active demand is highest for Hindi, Tamil, Telugu, Bengali, Marathi, Kannada, and Gujarati. Egocentric worker video is in extremely high demand regardless of language.</p></div>
+      <div class="faq-item reveal"><h3>When and how do I get paid?</h3><p>Payment within 14 days of deal closing. Methods: bank transfer (SWIFT/NEFT), UPI, and USDC. Currency negotiated at onboarding.</p></div>
+    </div>
+  </div>
+</section>
+
+<section class="cta-section">
+  <div class="cta-inner">
+    <h2>Ready to list<br>your data?</h2>
+    <p>Applications take 15 minutes. Our team reviews every one personally and responds within 5 business days.</p>
+    <a href="apply.html" class="btn-dark">Start Your Application →</a>
+  </div>
+</section>
+
+<footer>
+  <div class="footer-inner">
+    <div class="footer-top">
+      <div class="footer-brand"><a href="index.html" class="nav-logo">cllctd<span>.</span></a><p>The world's first niche AI data marketplace for emerging markets.</p></div>
+      <div class="footer-col"><h4>Platform</h4><a href="vendors.html">For Vendors</a><a href="buyers.html">For Buyers</a><a href="apply.html">Apply Now</a></div>
+      <div class="footer-col"><h4>Company</h4><a href="about.html">About</a><a href="about.html#contact">Contact</a></div>
+      <div class="footer-col"><h4>Legal</h4><a href="#">Vendor Terms</a><a href="#">Privacy Policy</a><a href="#">Data Ethics</a></div>
+    </div>
+    <div class="footer-bottom"><span>© 2026 cllctd. Dubai, UAE.</span><span>hello@cllctd.ai</span></div>
+  </div>
+</footer>
+
+<script>
+const cursor=document.getElementById('cursor'),ring=document.getElementById('cursorRing');
+document.addEventListener('mousemove',e=>{cursor.style.left=e.clientX+'px';cursor.style.top=e.clientY+'px';ring.style.left=e.clientX+'px';ring.style.top=e.clientY+'px'});
+document.querySelectorAll('a,button').forEach(el=>{el.addEventListener('mouseenter',()=>{cursor.style.transform='translate(-50%,-50%) scale(2.5)';ring.style.opacity='0'});el.addEventListener('mouseleave',()=>{cursor.style.transform='translate(-50%,-50%) scale(1)';ring.style.opacity='1'})});
+function toggleMenu(){document.getElementById('mobileMenu').classList.toggle('open')}
+const observer=new IntersectionObserver(entries=>{entries.forEach(e=>{if(e.isIntersecting)e.target.classList.add('visible')})},{threshold:.12,rootMargin:'0px 0px -40px 0px'});
+document.querySelectorAll('.reveal').forEach(el=>observer.observe(el));
+</script>
+</body>
+</html>
