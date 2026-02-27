@@ -1,1 +1,744 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+<meta name="mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+<meta name="apple-mobile-web-app-title" content="cllctd earn">
+<meta name="theme-color" content="#f0a832">
+<title>cllctd earn</title>
+<link rel="manifest" href="/manifest.json">
+<link rel="apple-touch-icon" href="/icon-192.svg">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,700;0,900;1,400&family=Instrument+Sans:wght@300;400;500;600&display=swap" rel="stylesheet">
+<style>
+*,*::before,*::after{box-sizing:border-box;margin:0;padding:0;-webkit-tap-highlight-color:transparent}
+:root{--bg:#0c0b09;--bg2:#111009;--s1:#161410;--s2:#1c1a14;--s3:#222018;--bdr:#2a2720;--bdr2:#333028;--amber:#f0a832;--amber-d:#d49020;--amber-bg:#1e1608;--cream:#f5f0e8;--cream-d:#b8b0a0;--muted:#6a6458;--green:#5ec45e;--green-bg:rgba(94,196,94,.1);--green-bdr:rgba(94,196,94,.25);--blue:#47d4ff;--red:#e05540;--red-bg:rgba(224,85,64,.1)}
+html,body{height:100%;background:#080706;overflow:hidden}
+body{font-family:'Instrument Sans',sans-serif;color:var(--cream)}
+#root{width:100%;height:100%;display:flex;justify-content:center;align-items:center}
+.app{width:100%;max-width:430px;height:100%;max-height:920px;background:var(--bg);display:flex;flex-direction:column;position:relative;overflow:hidden}
+@media(max-width:430px){.app{max-height:100vh}}
+.screen{position:absolute;inset:0;display:flex;flex-direction:column;background:var(--bg);overflow:hidden;transition:transform .3s cubic-bezier(.4,0,.2,1),opacity .3s ease}
+.screen.gone{transform:translateX(100%);opacity:0;pointer-events:none}
+.scroller{flex:1;overflow-y:auto;overflow-x:hidden;-webkit-overflow-scrolling:touch}
+.scroller::-webkit-scrollbar{display:none}
+.topbar{height:56px;display:flex;align-items:center;justify-content:space-between;padding:0 1.1rem;border-bottom:1px solid var(--bdr);background:rgba(12,11,9,.97);backdrop-filter:blur(12px);flex-shrink:0}
+.tlogo{font-family:'Playfair Display',serif;font-size:1.25rem;font-weight:900;color:var(--cream);letter-spacing:-.02em}
+.tlogo span{color:var(--amber)}
+.bal-pill{display:flex;align-items:center;gap:.3rem;background:var(--amber-bg);border:1px solid rgba(240,168,50,.2);padding:.28rem .7rem;font-size:.78rem;font-weight:600;color:var(--amber)}
+.icon-btn{width:36px;height:36px;display:flex;align-items:center;justify-content:center;background:var(--s1);border:1px solid var(--bdr);font-size:.85rem;cursor:pointer;position:relative}
+.ndot{position:absolute;top:7px;right:7px;width:5px;height:5px;background:var(--amber);border-radius:50%}
+.bottom-nav{display:flex;border-top:1px solid var(--bdr);background:var(--bg);flex-shrink:0;padding-bottom:env(safe-area-inset-bottom)}
+.nbtn{flex:1;display:flex;flex-direction:column;align-items:center;gap:.22rem;padding:.65rem .5rem;cursor:pointer;color:var(--muted);border:none;background:none;font-family:'Instrument Sans',sans-serif;transition:color .15s}
+.nbtn.on{color:var(--amber)}
+.nbtn svg{width:20px;height:20px;stroke:currentColor;fill:none;stroke-width:1.8;stroke-linecap:round;stroke-linejoin:round}
+.nbtn span{font-size:.6rem;font-weight:600;letter-spacing:.04em;text-transform:uppercase}
+.back-row{height:52px;display:flex;align-items:center;padding:0 1.1rem;gap:.75rem;border-bottom:1px solid var(--bdr);flex-shrink:0}
+.bbtn{width:32px;height:32px;display:flex;align-items:center;justify-content:center;background:var(--s1);border:1px solid var(--bdr);cursor:pointer;font-size:1rem;color:var(--cream)}
+.btitle{font-size:.88rem;font-weight:600;color:var(--cream);flex:1}
+.bpay{font-family:'Playfair Display',serif;font-size:1.15rem;font-weight:700;color:var(--amber)}
+.btn{display:flex;align-items:center;justify-content:center;gap:.5rem;border:none;cursor:pointer;font-family:'Instrument Sans',sans-serif;font-weight:600;letter-spacing:.05em;text-transform:uppercase;transition:all .15s}
+.ba{background:var(--amber);color:var(--bg);font-size:.82rem;padding:.9rem 1.5rem}
+.ba:active{background:var(--amber-d);transform:scale(.98)}
+.bg{background:transparent;color:var(--cream-d);font-size:.8rem;padding:.85rem 1.5rem;border:1px solid var(--bdr2)}
+.bg:hover{border-color:var(--cream-d)}
+.bd{background:var(--s2);color:var(--cream-d);font-size:.8rem;padding:.85rem 1.5rem;border:1px solid var(--bdr2)}
+.fw{width:100%}
+.inp{background:var(--s1);border:1px solid var(--bdr2);color:var(--cream);font-family:'Instrument Sans',sans-serif;font-size:.95rem;padding:.8rem 1rem;outline:none;transition:border-color .2s;-webkit-appearance:none;width:100%}
+.inp:focus{border-color:var(--amber)}
+.inp::placeholder{color:var(--muted)}
+.sel{background:var(--s1);border:1px solid var(--bdr2);color:var(--cream);font-family:'Instrument Sans',sans-serif;font-size:.95rem;padding:.8rem 1rem;outline:none;-webkit-appearance:none;width:100%;background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='10' height='6'%3E%3Cpath fill='%236a6458' d='M5 6L0 0h10z'/%3E%3C/svg%3E");background-repeat:no-repeat;background-position:right .9rem center}
+.sel option{background:#1c1a14}
+.field{display:flex;flex-direction:column;gap:.4rem}
+.flbl{font-size:.7rem;font-weight:600;letter-spacing:.08em;text-transform:uppercase;color:var(--muted)}
+.chips{display:flex;flex-wrap:wrap;gap:.5rem}
+.chip{padding:.4rem .9rem;background:var(--s2);border:1px solid var(--bdr2);font-size:.78rem;font-weight:500;color:var(--cream-d);cursor:pointer;transition:all .15s}
+.chip.on{background:rgba(240,168,50,.12);border-color:rgba(240,168,50,.4);color:var(--amber)}
+.otp-row{display:flex;gap:.5rem;justify-content:center}
+.obox{width:44px;height:52px;background:var(--s1);border:1px solid var(--bdr2);color:var(--cream);font-family:'Playfair Display',serif;font-size:1.4rem;font-weight:700;text-align:center;outline:none;transition:border-color .2s}
+.obox:focus{border-color:var(--amber)}
+.slbl{padding:.75rem 1.1rem .35rem;font-size:.65rem;font-weight:600;letter-spacing:.1em;text-transform:uppercase;color:var(--muted)}
+.tc{cursor:pointer;display:flex;align-items:center;gap:.85rem;padding:1rem 1.1rem;background:var(--s1);border-bottom:1px solid var(--bdr);border:none;width:100%;text-align:left;font-family:'Instrument Sans',sans-serif;transition:background .12s}
+.tc:active{background:var(--s2)}
+.tic{width:42px;height:42px;display:flex;align-items:center;justify-content:center;font-size:1.25rem;background:var(--bg);flex-shrink:0}
+.ti{flex:1;min-width:0}
+.tn{font-size:.88rem;font-weight:600;color:var(--cream);margin-bottom:.18rem;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.tm{font-size:.72rem;color:var(--muted);display:flex;align-items:center;gap:.4rem}
+.tr{flex-shrink:0;text-align:right}
+.tp{font-family:'Playfair Display',serif;font-size:1.1rem;font-weight:700;color:var(--amber);display:block;line-height:1.1}
+.tdur{font-size:.65rem;color:var(--muted);margin-top:.1rem}
+.badge{display:inline-flex;font-size:.58rem;font-weight:700;letter-spacing:.06em;text-transform:uppercase;padding:.12rem .4rem;margin-left:.35rem}
+.bh{background:var(--red-bg);color:var(--red)}
+.bn{background:rgba(71,212,255,.08);color:var(--blue)}
+.bb{background:var(--amber-bg);color:var(--amber)}
+.srow{display:grid;grid-template-columns:1fr 1fr 1fr;gap:1px;background:var(--bdr);flex-shrink:0}
+.sbox{background:var(--s1);padding:.85rem .75rem;text-align:center}
+.sv{font-family:'Playfair Display',serif;font-size:1.35rem;font-weight:700;color:var(--amber);display:block;line-height:1}
+.sl{font-size:.6rem;color:var(--muted);text-transform:uppercase;letter-spacing:.05em;margin-top:.2rem;display:block}
+.pw{padding:.9rem 1.1rem;background:var(--s1);border-bottom:1px solid var(--bdr)}
+.ph{display:flex;justify-content:space-between;margin-bottom:.45rem}
+.pl{font-size:.7rem;font-weight:600;letter-spacing:.05em;text-transform:uppercase;color:var(--cream-d)}
+.pv{font-size:.7rem;color:var(--amber);font-weight:600}
+.pt{height:3px;background:var(--bdr);overflow:hidden}
+.pf{height:100%;background:var(--amber);transition:width 1.2s ease}
+.db{display:flex;align-items:center;gap:.65rem;padding:.7rem 1.1rem;background:var(--amber-bg);border-bottom:1px solid rgba(240,168,50,.12)}
+.dd{width:7px;height:7px;background:var(--amber);border-radius:50%;flex-shrink:0;animation:pulse 2s infinite}
+@keyframes pulse{0%,100%{opacity:1}50%{opacity:.25}}
+.dt{font-size:.76rem;color:var(--amber);line-height:1.4}
+.frow{display:flex;gap:1px;background:var(--bdr);flex-shrink:0;overflow-x:auto}
+.frow::-webkit-scrollbar{display:none}
+.fb{flex:1;min-width:60px;padding:.6rem .5rem;background:var(--s1);border:none;font-family:'Instrument Sans',sans-serif;font-size:.7rem;font-weight:600;letter-spacing:.04em;text-transform:uppercase;color:var(--muted);cursor:pointer;white-space:nowrap;transition:all .12s}
+.fb.on{background:var(--s2);color:var(--amber)}
+.thero{padding:1.25rem 1.1rem;background:var(--s1);border-bottom:1px solid var(--bdr);flex-shrink:0}
+.thero-icon{font-size:2.2rem;display:block;margin-bottom:.6rem}
+.thero h2{font-family:'Playfair Display',serif;font-size:1.4rem;font-weight:700;color:var(--cream);margin-bottom:.35rem;line-height:1.1}
+.thero h2 em{font-style:italic;color:var(--amber)}
+.thero p{font-size:.84rem;color:var(--cream-d);line-height:1.65}
+.mrow{display:grid;grid-template-columns:1fr 1fr 1fr;gap:1px;background:var(--bdr);flex-shrink:0}
+.mi{background:var(--s1);padding:.75rem .6rem;text-align:center}
+.mv{font-size:.88rem;font-weight:600;color:var(--cream);display:block}
+.ml{font-size:.6rem;color:var(--muted);text-transform:uppercase;letter-spacing:.05em}
+.instrs{padding:1.1rem}
+.ih{font-size:.68rem;font-weight:600;letter-spacing:.1em;text-transform:uppercase;color:var(--muted);margin-bottom:.7rem}
+.ii{display:flex;gap:.65rem;margin-bottom:.65rem;align-items:flex-start}
+.in{width:20px;height:20px;background:var(--amber-bg);border:1px solid rgba(240,168,50,.2);display:flex;align-items:center;justify-content:center;font-size:.62rem;font-weight:700;color:var(--amber);flex-shrink:0;margin-top:.1rem}
+.it{font-size:.84rem;color:var(--cream-d);line-height:1.6}
+.cbox{margin:0 1.1rem 1.1rem;background:rgba(71,212,255,.05);border:1px solid rgba(71,212,255,.15);padding:.85rem;font-size:.78rem;color:var(--blue);line-height:1.55}
+.abar{padding:1rem 1.1rem;border-top:1px solid var(--bdr);flex-shrink:0;padding-bottom:max(1rem,env(safe-area-inset-bottom))}
+.rbody{flex:1;display:flex;flex-direction:column;align-items:center;justify-content:center;padding:1.5rem 1.25rem;gap:1.25rem;text-align:center}
+.pc{background:var(--s1);border:1px solid var(--bdr2);padding:1.35rem 1.25rem;width:100%;max-width:320px}
+.pnum{font-size:.65rem;font-weight:600;letter-spacing:.1em;text-transform:uppercase;color:var(--muted);margin-bottom:.4rem}
+.ptxt{font-size:1.2rem;color:var(--cream);font-weight:500;line-height:1.5;margin-bottom:.6rem}
+.ptrans{font-size:.8rem;color:var(--muted);font-style:italic}
+.dots{display:flex;gap:.35rem;justify-content:center}
+.dot{width:8px;height:8px;border-radius:50%;background:var(--bdr2);transition:background .2s}
+.dot.done{background:var(--green)}
+.dot.now{background:var(--amber)}
+.wform{height:36px;display:flex;align-items:center;gap:2px;justify-content:center}
+.wb{width:3px;border-radius:2px;background:var(--amber);transform-origin:bottom;animation:wv .6s ease-in-out infinite}
+.wb:nth-child(1){height:8px;animation-delay:0s}.wb:nth-child(2){height:20px;animation-delay:.08s}.wb:nth-child(3){height:30px;animation-delay:.16s}.wb:nth-child(4){height:22px;animation-delay:.24s}.wb:nth-child(5){height:14px;animation-delay:.32s}.wb:nth-child(6){height:26px;animation-delay:.12s}.wb:nth-child(7){height:18px;animation-delay:.2s}
+@keyframes wv{0%,100%{transform:scaleY(1)}50%{transform:scaleY(1.7)}}
+.ibars{display:flex;align-items:center;gap:2px}
+.ib{width:3px;border-radius:2px;background:var(--bdr2)}
+.rbtn{width:68px;height:68px;border-radius:50%;border:3px solid var(--amber);background:transparent;display:flex;align-items:center;justify-content:center;cursor:pointer;transition:all .2s;font-size:1.5rem;flex-shrink:0}
+.rbtn.rec{background:var(--amber);animation:rp 1s ease-in-out infinite}
+@keyframes rp{0%,100%{box-shadow:0 0 0 0 rgba(240,168,50,.4)}50%{box-shadow:0 0 0 14px rgba(240,168,50,0)}}
+.rhint{font-size:.76rem;color:var(--muted)}
+.vid-area{flex:1;position:relative;background:#000;display:flex;align-items:center;justify-content:center;overflow:hidden}
+.vid-over{position:absolute;inset:0;display:flex;flex-direction:column;align-items:center;justify-content:space-between;padding:1rem}
+.vbtn{width:64px;height:64px;border-radius:50%;border:3px solid #fff;background:transparent;display:flex;align-items:center;justify-content:center;cursor:pointer}
+.vbtn.rec{border-color:var(--red)}
+.vi{width:28px;height:28px;border-radius:50%;background:#fff;transition:all .2s}
+.vbtn.rec .vi{border-radius:4px;background:var(--red)}
+.pgrid{display:grid;grid-template-columns:1fr 1fr 1fr;gap:1px;background:var(--bdr);margin:1px 0}
+.pcell{aspect-ratio:1;background:var(--s1);display:flex;align-items:center;justify-content:center;cursor:pointer;position:relative;overflow:hidden;flex-direction:column;gap:.3rem}
+.pcell img{width:100%;height:100%;object-fit:cover;position:absolute;inset:0}
+.pcell-lbl{font-size:.6rem;color:var(--muted);text-transform:uppercase;letter-spacing:.06em}
+.prm{position:absolute;top:4px;right:4px;width:20px;height:20px;background:rgba(224,85,64,.85);border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:.65rem;color:#fff;cursor:pointer;z-index:1}
+.pact{display:flex;gap:1px;background:var(--bdr);flex-shrink:0}
+.pab{flex:1;padding:.85rem;background:var(--s1);border:none;font-family:'Instrument Sans',sans-serif;font-size:.75rem;font-weight:600;letter-spacing:.05em;text-transform:uppercase;color:var(--cream-d);cursor:pointer;display:flex;flex-direction:column;align-items:center;gap:.3rem}
+.pab:active{background:var(--s2)}
+.pab span{font-size:1.2rem}
+.txcard{margin:1rem;background:var(--s1);border:1px solid var(--bdr2);padding:1.25rem}
+.txsrc{font-size:1rem;color:var(--cream);line-height:1.6;margin-bottom:1rem}
+.lchs{display:flex;gap:.5rem;flex-wrap:wrap}
+.lch{padding:.5rem 1rem;background:var(--s2);border:1px solid var(--bdr2);font-size:.82rem;font-weight:500;color:var(--cream-d);cursor:pointer;transition:all .15s}
+.lch.on{background:var(--green-bg);border-color:var(--green-bdr);color:var(--green)}
+.sbody{flex:1;display:flex;flex-direction:column;align-items:center;justify-content:center;padding:2rem 1.5rem;gap:1.25rem;text-align:center}
+.sicon{width:72px;height:72px;background:var(--green-bg);border:2px solid var(--green);border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:1.8rem;animation:pi .4s cubic-bezier(.68,-.55,.265,1.55) both}
+@keyframes pi{from{transform:scale(0)}to{transform:scale(1)}}
+.sbody h2{font-family:'Playfair Display',serif;font-size:1.8rem;font-weight:900;color:var(--cream)}
+.sbody h2 em{font-style:italic;color:var(--green)}
+.sbody p{font-size:.88rem;color:var(--cream-d);line-height:1.7;max-width:260px}
+.ecard{background:var(--amber-bg);border:1px solid rgba(240,168,50,.2);padding:.9rem 1.75rem;text-align:center}
+.elbl{font-size:.65rem;font-weight:600;letter-spacing:.12em;text-transform:uppercase;color:var(--muted);margin-bottom:.2rem}
+.eamt{font-family:'Playfair Display',serif;font-size:2.2rem;font-weight:900;color:var(--amber)}
+.esub{font-size:.7rem;color:var(--muted);margin-top:.15rem}
+.balcard{padding:1.4rem 1.1rem;background:var(--s1);border-bottom:1px solid var(--bdr)}
+.blbl{font-size:.65rem;font-weight:600;letter-spacing:.12em;text-transform:uppercase;color:var(--muted);margin-bottom:.25rem}
+.bamt{font-family:'Playfair Display',serif;font-size:2.8rem;font-weight:900;color:var(--amber);line-height:1}
+.bpend{font-size:.76rem;color:var(--muted);margin-top:.2rem}
+.wdrow{display:flex;gap:1px;background:var(--bdr);flex-shrink:0}
+.wdb{flex:1;padding:.8rem .4rem;background:var(--s1);border:none;font-family:'Instrument Sans',sans-serif;font-size:.65rem;font-weight:600;letter-spacing:.05em;text-transform:uppercase;color:var(--muted);cursor:pointer;display:flex;flex-direction:column;align-items:center;gap:.25rem}
+.wdb.on{color:var(--amber)}
+.wdb:active{background:var(--s2)}
+.wdi{font-size:1.1rem}
+.txn{display:flex;align-items:center;justify-content:space-between;padding:.85rem 1.1rem;border-bottom:1px solid var(--bdr);background:var(--s1)}
+.xtask{font-size:.84rem;font-weight:500;color:var(--cream);margin-bottom:.15rem}
+.xdate{font-size:.7rem;color:var(--muted)}
+.xamt{font-size:.88rem;font-weight:600}
+.xamt.cr{color:var(--green)}
+.xamt.dr{color:var(--red)}
+.xst{font-size:.6rem;font-weight:600;letter-spacing:.06em;text-transform:uppercase;padding:.12rem .38rem;margin-top:.15rem;display:inline-block}
+.xst.approved{background:var(--green-bg);color:var(--green)}
+.xst.pending{background:var(--amber-bg);color:var(--amber)}
+.xst.paid{background:var(--s3);color:var(--muted)}
+.phead{padding:1.25rem 1.1rem 1rem;text-align:center;border-bottom:1px solid var(--bdr)}
+.ava{width:60px;height:60px;background:var(--amber-bg);border:2px solid var(--amber);border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:1.4rem;margin:0 auto .6rem}
+.pname{font-family:'Playfair Display',serif;font-size:1.25rem;font-weight:700;color:var(--cream)}
+.plang{font-size:.76rem;color:var(--muted);margin-top:.2rem}
+.pbadges{display:flex;gap:.4rem;justify-content:center;margin-top:.6rem;flex-wrap:wrap}
+.pbadge{font-size:.62rem;font-weight:600;letter-spacing:.06em;text-transform:uppercase;padding:.2rem .55rem;background:var(--s2);color:var(--cream-d)}
+.pbadge.g{background:var(--amber-bg);color:var(--amber)}
+.qbar{padding:.9rem 1.1rem;background:var(--s1);border-bottom:1px solid var(--bdr)}
+.qrow{display:flex;justify-content:space-between;margin-bottom:.4rem}
+.ql{font-size:.7rem;font-weight:600;text-transform:uppercase;letter-spacing:.05em;color:var(--cream-d)}
+.qv{font-size:.7rem;font-weight:600;color:var(--green)}
+.qtrk{height:5px;background:var(--bdr);overflow:hidden}
+.qfil{height:100%;background:var(--green);width:91%}
+.psec{padding:.65rem 1.1rem .25rem;font-size:.65rem;font-weight:600;letter-spacing:.1em;text-transform:uppercase;color:var(--muted)}
+.pitem{display:flex;align-items:center;justify-content:space-between;padding:.85rem 1.1rem;border-bottom:1px solid var(--bdr);background:var(--s1);cursor:pointer}
+.pitem:active{background:var(--s2)}
+.pil{display:flex;align-items:center;gap:.65rem}
+.pico{font-size:.95rem;width:24px;text-align:center}
+.pilbl{font-size:.84rem;color:var(--cream)}
+.pir{font-size:.74rem;color:var(--muted)}
+.owrap{flex:1;display:flex;flex-direction:column;padding:2rem 1.5rem;gap:1.5rem;justify-content:center}
+.ologob{font-family:'Playfair Display',serif;font-size:2.8rem;font-weight:900;color:var(--cream);letter-spacing:-.03em}
+.ologob span{color:var(--amber)}
+.otagline{font-family:'Playfair Display',serif;font-size:1.6rem;font-weight:700;color:var(--cream);line-height:1.15}
+.otagline em{font-style:italic;color:var(--amber)}
+.osub{font-size:.88rem;color:var(--cream-d);line-height:1.7}
+.bpills{display:flex;flex-direction:column;gap:.5rem}
+.bpill{display:flex;align-items:center;gap:.75rem;padding:.65rem .85rem;background:var(--s1);border:1px solid var(--bdr)}
+.bpico{font-size:1.1rem;width:24px;text-align:center;flex-shrink:0}
+.bptxt{font-size:.82rem;color:var(--cream-d)}
+.bpern{font-size:.82rem;font-weight:600;color:var(--amber);margin-left:auto;flex-shrink:0}
+.ibanner{background:rgba(240,168,50,.08);border:1px solid rgba(240,168,50,.2);padding:.75rem 1rem;font-size:.78rem;color:var(--amber);line-height:1.5;display:flex;gap:.5rem;align-items:flex-start}
+.fwrap{flex:1;overflow-y:auto;padding:1.5rem 1.1rem;display:flex;flex-direction:column;gap:1.25rem}
+.ftitle{font-family:'Playfair Display',serif;font-size:1.5rem;font-weight:700;color:var(--cream);line-height:1.1}
+.ftitle em{font-style:italic;color:var(--amber)}
+.fsub{font-size:.84rem;color:var(--cream-d);line-height:1.65}
+.tnote{font-size:.74rem;color:var(--muted);line-height:1.6}
+.tnote a{color:var(--amber);text-decoration:none}
+.rrow{text-align:center;font-size:.8rem;color:var(--muted)}
+.rrow a{color:var(--amber);cursor:pointer}
+.pfx{background:var(--s2);border:1px solid var(--bdr2);border-right:none;padding:.8rem .75rem;font-size:.88rem;color:var(--cream-d);white-space:nowrap;flex-shrink:0}
+.irow{display:flex}
+.toast{position:absolute;bottom:76px;left:50%;transform:translateX(-50%) translateY(8px);background:var(--s2);border:1px solid var(--bdr2);padding:.6rem 1.1rem;font-size:.78rem;color:var(--cream);white-space:nowrap;opacity:0;transition:all .25s;pointer-events:none;z-index:999}
+.toast.show{opacity:1;transform:translateX(-50%) translateY(0)}
+.es{padding:3rem 1.5rem;text-align:center;display:flex;flex-direction:column;align-items:center;gap:.75rem}
+.es .eico{font-size:2.5rem}
+.es h3{font-family:'Playfair Display',serif;font-size:1.2rem;font-weight:700;color:var(--cream)}
+.es p{font-size:.84rem;color:var(--muted);line-height:1.65;max-width:220px}
+@keyframes fadein{from{opacity:0;transform:translateY(8px)}to{opacity:1;transform:translateY(0)}}
+.fin{animation:fadein .3s ease both}
+</style>
+</head>
+<body>
+<div id="root"></div>
+<script type="module">
+import{createElement as h,useState,useEffect,useRef,Fragment}from'https://esm.sh/react@18';
+import{createRoot}from'https://esm.sh/react-dom@18/client';
 
+// DATA
+const TASKS=[
+  {id:'v1',icon:'🎙️',type:'voice',title:'Hindi Phrase Recording',lang:'Hindi',pay:170,dur:'~8 min',count:10,badge:'bonus',hl:'Hindi Phrase',hli:'Recording',desc:'Record yourself speaking 10 common Hindi phrases. Speak naturally — just clearly the way you normally would.',instrs:['Find a quiet spot — background noise causes rejections','Tap the mic and speak each phrase clearly','Hold phone 15–20cm from your mouth','1-second pause between phrases is fine'],
+  phrases:[{t:'नमस्ते, आप कैसे हैं?',r:'Namaste, aap kaise hain?'},{t:'मेरा नाम क्या है?',r:'Mera naam kya hai?'},{t:'आज मौसम बहुत अच्छा है।',r:'Aaj mausam bahut achha hai.'},{t:'क्या आप मुझे बता सकते हैं?',r:'Kya aap mujhe bata sakte hain?'},{t:'मुझे बहुत खुशी है।',r:'Mujhe bahut khushi hai.'},{t:'यह बाज़ार कहाँ है?',r:'Yeh bazaar kahan hai?'},{t:'धन्यवाद, बहुत मदद हुई।',r:'Dhanyavaad, bahut madad hui.'},{t:'मैं कल वापस आऊँगा।',r:'Main kal waapas aaunga.'},{t:'यह काम ज़रूरी है।',r:'Yeh kaam zaroori hai.'},{t:'शुभ रात्रि।',r:'Shubh raatri.'}]},
+  {id:'t1',icon:'🎙️',type:'voice',title:'Tamil Conversation Set',lang:'Tamil',pay:240,dur:'~12 min',count:1,badge:'hot',hl:'Tamil Conversation',hli:'Set',desc:'Record a 2-minute natural dialogue in Tamil. Regional accent preferred.',instrs:['Read the prompt and understand it first','Speak naturally, not like you\'re reading','Regional accent and idioms are a plus','Quiet room required — no echo'],phrases:[{t:'என் பெயர் என்ன? நான் எங்கே இருக்கிறேன்?',r:'Enna peyar? Naan enge irukiren?'}]},
+  {id:'v2',icon:'🎬',type:'video',title:'Workplace POV Clip',lang:'Any',pay:180,dur:'~5 min',count:1,badge:'new',hl:'Workplace POV',hli:'Clip',desc:'Film 30 seconds of your hands performing a work task from first-person view. Any manual task works.',instrs:['Mount or hold phone at chest/eye level','Hands must be visible throughout','Keep moving — no more than 3 seconds static','No faces needed — just hands and environment']},
+  {id:'p1',icon:'📷',type:'photo',title:'Street Scene Photos',lang:'Any',pay:70,dur:'~10 min',count:10,badge:null,hl:'Street Scene',hli:'Photos',desc:'Upload 10 photos of outdoor street scenes from your area. Markets, roads, shops, traffic.',instrs:['Take photos outdoors in natural light','Avoid blurry or dark images','No faces visible — blur or avoid','Variety preferred — different streets and angles']},
+  {id:'x1',icon:'📝',type:'text',title:'Sentence Sentiment Labels',lang:'Any',pay:45,dur:'~6 min',count:20,badge:null,hl:'Sentence Sentiment',hli:'Labels',desc:'Read 20 sentences and label each as positive, negative, or neutral.',instrs:['Read each sentence fully first','Choose overall tone — don\'t overthink','If ambiguous, choose Neutral','Any language welcome'],
+  txItems:[{t:'The food was absolutely wonderful and service was prompt.',o:['Positive','Negative','Neutral']},{t:'My phone battery died during an important call.',o:['Positive','Negative','Neutral']},{t:'The train arrives at 9:45am from Platform 3.',o:['Positive','Negative','Neutral']},{t:'I can\'t believe how kind everyone was at the event.',o:['Positive','Negative','Neutral']},{t:'The package was damaged and nothing was done.',o:['Positive','Negative','Neutral']}]},
+  {id:'m1',icon:'🎙️',type:'voice',title:'Marathi Regional Phrases',lang:'Marathi',pay:115,dur:'~7 min',count:8,badge:'bonus',hl:'Marathi Regional',hli:'Phrases',desc:'Record 8 phrases in Marathi. Pune or Nashik dialect is particularly valuable.',instrs:['Speak in your natural Marathi dialect','Don\'t switch to Hindi mid-recording','Clear pronunciation, normal pace','Quiet room required'],
+  phrases:[{t:'नमस्कार, तुम्ही कसे आहात?',r:'Namaskar, tumhi kase aahat?'},{t:'माझे नाव काय आहे?',r:'Maaze naav kaay aahe?'},{t:'आज खूप उकडतंय.',r:'Aaj khoop ukadtay.'},{t:'बाजार कुठे आहे?',r:'Bajar kuthe aahe?'},{t:'धन्यवाद, खूप मदत झाली.',r:'Dhanyavaad, khoop madat zhaali.'},{t:'मी उद्या येईन.',r:'Mi udya yein.'},{t:'हे काम महत्त्वाचे आहे.',r:'He kaam mahatvaache aahe.'},{t:'शुभ रात्री.',r:'Shubh raatri.'}]},
+];
+const HIST=[
+  {task:'Hindi Phrase Recording ×10',date:'Today · 2:14pm',amt:'+₹170',type:'cr',st:'pending'},
+  {task:'Workplace POV Video',date:'Today · 11:02am',amt:'+₹180',type:'cr',st:'approved'},
+  {task:'Tamil Voice Set',date:'Yesterday',amt:'+₹240',type:'cr',st:'approved'},
+  {task:'Street Scene Photos ×10',date:'Yesterday',amt:'+₹70',type:'cr',st:'approved'},
+  {task:'Sentence Labels ×20',date:'2 days ago',amt:'+₹45',type:'cr',st:'approved'},
+  {task:'UPI Withdrawal',date:'3 days ago',amt:'-₹500',type:'dr',st:'paid'},
+];
+
+// SIMPLE STATE
+let S={scr:'splash',prev:'splash',task:null,user:null,filter:'all',bal:1240,earn:190};
+let LS=[];
+const get=()=>S;
+const set=(p)=>{S={...S,...p};LS.forEach(f=>f())};
+const use=(sel)=>{
+  const[v,sv]=useState(()=>sel(S));
+  useEffect(()=>{const f=()=>sv(sel(S));LS.push(f);return()=>{LS=LS.filter(l=>l!==f)};},[]);
+  return v;
+};
+
+// NAV
+const go=(s,keep)=>set({prev:keep?S.prev:S.scr,scr:s});
+const back=()=>set({scr:S.prev||'home'});
+const tab=(s)=>set({scr:s});
+const openTask=(t)=>set({task:t,prev:S.scr,scr:'detail'});
+const startTask=()=>{
+  const t=S.task;if(!t)return;
+  if(t.type==='voice')set({scr:'voice'});
+  else if(t.type==='video')set({scr:'video'});
+  else if(t.type==='photo')set({scr:'photo'});
+  else if(t.type==='text')set({scr:'text'});
+};
+let _tt;
+const toast=(m)=>{clearTimeout(_tt);set({tm:m,tv:true});_tt=setTimeout(()=>set({tv:false}),2500)};
+
+// COMPONENTS
+function Toast(){const m=use(s=>s.tm),v=use(s=>s.tv);return h('div',{className:`toast${v?' show':''}`},m)}
+
+const NavIco={
+  home:h('svg',{viewBox:'0 0 24 24'},h('path',{d:'M3 12l2-2m0 0l7-7 7 7M5 10v10a1 1 0 001 1h3m10-11l2 2m-2-2v10a1 1 0 01-1 1h-3m-6 0a1 1 0 001-1v-4a1 1 0 011-1h2a1 1 0 011 1v4a1 1 0 001 1m-6 0h6'})),
+  earn:h('svg',{viewBox:'0 0 24 24'},h('circle',{cx:'12',cy:'12',r:'9'}),h('path',{d:'M14.8 9A2 2 0 0013 8h-2a2 2 0 000 4h2a2 2 0 010 4h-2a2 2 0 01-1.8-1M12 7v1m0 8v1'})),
+  prof:h('svg',{viewBox:'0 0 24 24'},h('path',{d:'M20 21v-2a4 4 0 00-4-4H8a4 4 0 00-4 4v2'}),h('circle',{cx:'12',cy:'7',r:'4'})),
+};
+function BNav({a}){
+  return h('nav',{className:'bottom-nav'},
+    [['home','Tasks',NavIco.home],['earnings','Earn',NavIco.earn],['profile','Profile',NavIco.prof]].map(([id,lbl,ico])=>
+      h('button',{key:id,className:`nbtn${a===id?' on':''}`,onClick:()=>tab(id)},ico,h('span',null,lbl))
+    )
+  );
+}
+
+// SPLASH
+function Splash(){
+  const ios=/iphone|ipad|ipod/i.test(navigator.userAgent);
+  return h('div',{className:'screen fin',style:{justifyContent:'space-between'}},
+    h('div',{className:'owrap',style:{paddingBottom:'1rem'}},
+      h('div',{className:'ologob'},'cllctd',h('span',null,'.')),
+      h('div',{className:'otagline'},'Your voice.',h('br'),'Your world.',h('br'),h('em',null,'Your income.')),
+      h('p',{className:'osub'},'AI companies pay thousands for data only you can provide. cllctd pays you directly — every task, every time.'),
+      h('div',{className:'bpills'},
+        h('div',{className:'bpill'},h('span',{className:'bpico'},'🎙️'),h('span',{className:'bptxt'},'Voice recordings in your language'),h('span',{className:'bpern'},'₹85–240')),
+        h('div',{className:'bpill'},h('span',{className:'bpico'},'🎬'),h('span',{className:'bptxt'},'Short video tasks — POV, hands'),h('span',{className:'bpern'},'₹120–200')),
+        h('div',{className:'bpill'},h('span',{className:'bpico'},'📷'),h('span',{className:'bptxt'},'Photos and camera roll tasks'),h('span',{className:'bpern'},'₹45–190')),
+      ),
+      ios&&h('div',{className:'ibanner'},h('span',null,'📲'),h('span',null,'Install: tap ',h('strong',null,'Share'),' → ',h('strong',null,'Add to Home Screen'),' to use as an app')),
+    ),
+    h('div',{style:{padding:'0 1.5rem 2rem',display:'flex',flexDirection:'column',gap:'.75rem'}},
+      h('button',{className:'btn ba fw',onClick:()=>go('phone')},'Get Started →'),
+      h('button',{className:'btn bg fw',onClick:()=>{set({user:{name:'Priya',lang:'Hindi',badge:'top'}});tab('home');}},'Sign In (Demo)'),
+    )
+  );
+}
+
+// PHONE
+function Phone(){
+  const[p,sp]=useState('');
+  return h('div',{className:'screen fin',style:{justifyContent:'space-between'}},
+    h('div',{className:'fwrap'},
+      h('h2',{className:'ftitle'},'Enter your ',h('em',null,'number.')),
+      h('p',{className:'fsub'},'We\'ll send a one-time code. No password needed.'),
+      h('div',{className:'field'},
+        h('label',{className:'flbl'},'Phone number'),
+        h('div',{className:'irow'},
+          h('div',{className:'pfx'},'🇮🇳 +91'),
+          h('input',{className:'inp',type:'tel',placeholder:'98765 43210',value:p,onChange:e=>sp(e.target.value),inputMode:'numeric',style:{borderLeft:'none'}}),
+        )
+      ),
+      h('p',{className:'tnote'},'By continuing you agree to our ',h('a',{href:'#'},'Terms'),' and ',h('a',{href:'#'},'Data Policy'),'. Your number is encrypted and never shared.'),
+    ),
+    h('div',{style:{padding:'0 1.1rem 1.5rem'}},
+      h('button',{className:'btn ba fw',onClick:()=>p.length>=5?go('otp'):toast('Enter a valid number')},'Send OTP →'),
+    )
+  );
+}
+
+// OTP
+function OTP(){
+  const[d,sd]=useState(['','','','','','']);
+  const[cd,scd]=useState(45);
+  const refs=[useRef(),useRef(),useRef(),useRef(),useRef(),useRef()];
+  useEffect(()=>{if(cd<=0)return;const t=setTimeout(()=>scd(c=>c-1),1000);return()=>clearTimeout(t)},[cd]);
+  const hit=(i,v)=>{
+    const nd=[...d];nd[i]=v.slice(-1);sd(nd);
+    if(v&&i<5)refs[i+1].current?.focus();
+    if(nd.every(x=>x))setTimeout(()=>go('profileSetup'),300);
+  };
+  return h('div',{className:'screen fin',style:{justifyContent:'space-between'}},
+    h('div',{className:'fwrap'},
+      h('h2',{className:'ftitle'},'Enter the ',h('em',null,'code.')),
+      h('p',{className:'fsub'},'We sent a 6-digit code to your number.'),
+      h('div',{className:'otp-row'},
+        d.map((v,i)=>h('input',{key:i,ref:refs[i],className:'obox',type:'tel',inputMode:'numeric',maxLength:1,value:v,
+          onChange:e=>hit(i,e.target.value),
+          onKeyDown:e=>{if(e.key==='Backspace'&&!v&&i>0)refs[i-1].current?.focus();}}))
+      ),
+      h('p',{className:'rrow'},cd>0?`Resend in ${cd}s`:h(Fragment,null,'Didn\'t get it? ',h('a',{onClick:()=>{scd(45);toast('New OTP sent')}},'Resend'))),
+    ),
+    h('div',{style:{padding:'0 1.1rem 1.5rem'}},h('button',{className:'btn bg fw',onClick:()=>go('phone')},'← Back'))
+  );
+}
+
+// PROFILE SETUP
+function ProfileSetup(){
+  const[name,sn]=useState('');
+  const[lang,sl]=useState('Hindi');
+  const[prefs,sp]=useState(['voice']);
+  const LANGS=['Hindi','Tamil','Telugu','Bengali','Marathi','Kannada','Gujarati','Malayalam','Punjabi','Odia'];
+  const PREFS=['Voice','Video','Photos','Text'];
+  const tog=(p)=>sp(prev=>prev.includes(p.toLowerCase())?prev.filter(x=>x!==p.toLowerCase()):[...prev,p.toLowerCase()]);
+  return h('div',{className:'screen fin',style:{justifyContent:'space-between'}},
+    h('div',{className:'fwrap'},
+      h('h2',{className:'ftitle'},'Set up your ',h('em',null,'profile.')),
+      h('p',{className:'fsub'},'Helps us show tasks in your language at the best pay rates.'),
+      h('div',{className:'field'},h('label',{className:'flbl'},'First name'),h('input',{className:'inp',placeholder:'Your first name',value:name,onChange:e=>sn(e.target.value)})),
+      h('div',{className:'field'},h('label',{className:'flbl'},'Primary task language'),
+        h('select',{className:'sel',value:lang,onChange:e=>sl(e.target.value)},LANGS.map(l=>h('option',{key:l,value:l},l)))
+      ),
+      h('div',{className:'field'},h('label',{className:'flbl'},'Task types you want'),
+        h('div',{className:'chips'},PREFS.map(p=>h('div',{key:p,className:`chip${prefs.includes(p.toLowerCase())?' on':''}`,onClick:()=>tog(p)},p)))
+      ),
+    ),
+    h('div',{style:{padding:'0 1.1rem 1.5rem'}},
+      h('button',{className:'btn ba fw',onClick:()=>{
+        if(!name){toast('Enter your first name');return;}
+        set({user:{name,lang,langs:[lang],prefs,badge:'new'}});go('payout');
+      }},'Next →'),
+    )
+  );
+}
+
+// PAYOUT
+function Payout(){
+  const[m,sm]=useState('upi');
+  return h('div',{className:'screen fin',style:{justifyContent:'space-between'}},
+    h('div',{className:'fwrap'},
+      h('h2',{className:'ftitle'},'Set up ',h('em',null,'payout.')),
+      h('p',{className:'fsub'},'Earnings hit your account the moment a task is approved. Min. withdrawal: ₹100.'),
+      h('div',{className:'chips',style:{marginBottom:'.5rem'}},
+        ['upi','bank','usdc'].map(x=>h('div',{key:x,className:`chip${m===x?' on':''}`,onClick:()=>sm(x)},x.toUpperCase()))
+      ),
+      m==='upi'&&h('div',{className:'field'},h('label',{className:'flbl'},'UPI ID'),h('input',{className:'inp',placeholder:'yourname@upi'})),
+      m==='bank'&&h(Fragment,null,
+        h('div',{className:'field'},h('label',{className:'flbl'},'IFSC Code'),h('input',{className:'inp',placeholder:'SBIN0001234'})),
+        h('div',{className:'field'},h('label',{className:'flbl'},'Account Number'),h('input',{className:'inp',placeholder:'Account number',type:'tel',inputMode:'numeric'})),
+      ),
+      m==='usdc'&&h('div',{className:'field'},h('label',{className:'flbl'},'USDC Wallet (Solana)'),h('input',{className:'inp',placeholder:'Wallet address'})),
+      h('p',{className:'tnote'},'🔒 Your payout details are encrypted and never shared with third parties.'),
+    ),
+    h('div',{style:{padding:'0 1.1rem .75rem',display:'flex',flexDirection:'column',gap:'.6rem'}},
+      h('button',{className:'btn ba fw',onClick:()=>tab('home')},'Start Earning →'),
+      h('button',{className:'btn bg fw',onClick:()=>tab('home')},'Set up later'),
+    )
+  );
+}
+
+// HOME
+function Home(){
+  const user=use(s=>s.user);
+  const filter=use(s=>s.filter);
+  const bal=use(s=>s.bal);
+  const earn=use(s=>s.earn);
+  const goal=500;
+  const hr=new Date().getHours();
+  const gr=hr<12?'Good morning':hr<17?'Good afternoon':'Good evening';
+  const filtered=filter==='all'?TASKS:TASKS.filter(t=>t.type===filter);
+  return h('div',{className:'screen'},
+    h('div',{className:'topbar'},
+      h('div',{className:'tlogo'},'cllctd',h('span',null,'.')),
+      h('div',{style:{display:'flex',gap:'.5rem',alignItems:'center'}},
+        h('div',{className:'bal-pill'},'₹',bal.toLocaleString()),
+        h('div',{className:'icon-btn',onClick:()=>toast('No new notifications')},'🔔',h('div',{className:'ndot'})),
+      )
+    ),
+    h('div',{className:'scroller'},
+      h('div',{style:{padding:'.85rem 1.1rem .5rem'}},
+        h('div',{style:{fontSize:'.72rem',color:'var(--muted)',letterSpacing:'.06em',textTransform:'uppercase',marginBottom:'.15rem'}},gr),
+        h('div',{style:{fontFamily:"'Playfair Display',serif",fontSize:'1.45rem',fontWeight:700,color:'var(--cream)',lineHeight:1.1}},
+          user?`${user.name}, `:'Ready to ',h('em',{style:{fontStyle:'italic',color:'var(--amber)'}},'earn today?')
+        ),
+      ),
+      h('div',{className:'srow'},
+        h('div',{className:'sbox'},h('span',{className:'sv'},'₹1,240'),h('span',{className:'sl'},'This week')),
+        h('div',{className:'sbox'},h('span',{className:'sv'},'18'),h('span',{className:'sl'},'Tasks done')),
+        h('div',{className:'sbox'},h('span',{className:'sv'},'91%'),h('span',{className:'sl'},'Quality')),
+      ),
+      h('div',{className:'pw'},
+        h('div',{className:'ph'},h('span',{className:'pl'},"Today's goal"),h('span',{className:'pv'},`₹${earn} / ₹${goal}`)),
+        h('div',{className:'pt'},h('div',{className:'pf',style:{width:`${(earn/goal)*100}%`}})),
+      ),
+      h('div',{className:'db'},h('div',{className:'dd'}),h('div',{className:'dt'},h('strong',null,'High demand: '),'Tamil voice recordings — 2× bonus pay today only')),
+      h('div',{className:'frow'},
+        ['all','voice','video','photo','text'].map(f=>h('button',{key:f,className:`fb${filter===f?' on':''}`,onClick:()=>set({filter:f})},f.charAt(0).toUpperCase()+f.slice(1)))
+      ),
+      h('div',{className:'slbl'},'Available Tasks'),
+      filtered.length===0
+        ?h('div',{className:'es'},h('span',{className:'eico'},'🔍'),h('h3',null,'No tasks right now'),h('p',null,"We'll notify you when matching tasks appear"))
+        :filtered.map(t=>
+          h('button',{key:t.id,className:'tc',onClick:()=>openTask(t)},
+            h('div',{className:'tic'},t.icon),
+            h('div',{className:'ti'},
+              h('div',{className:'tn'},t.title,t.badge&&h('span',{className:`badge ${t.badge==='hot'?'bh':t.badge==='new'?'bn':'bb'}`},t.badge==='hot'?'Hot':t.badge==='new'?'New':'Bonus')),
+              h('div',{className:'tm'},t.type,h('span',{style:{color:'var(--bdr2)'}},'·'),t.lang,h('span',{style:{color:'var(--bdr2)'}},'·'),t.count,' items'),
+            ),
+            h('div',{className:'tr'},h('span',{className:'tp'},'₹'+t.pay),h('div',{className:'tdur'},t.dur))
+          )
+        ),
+      h('div',{style:{height:'1rem'}}),
+    ),
+    h(BNav,{a:'home'}),
+  );
+}
+
+// DETAIL
+function Detail(){
+  const t=use(s=>s.task);if(!t)return null;
+  return h('div',{className:'screen'},
+    h('div',{className:'back-row'},h('button',{className:'bbtn',onClick:back},'←'),h('span',{className:'btitle'},t.title),h('span',{className:'bpay'},'₹'+t.pay)),
+    h('div',{className:'scroller'},
+      h('div',{className:'thero'},h('span',{className:'thero-icon'},t.icon),h('h2',null,t.hl,' ',h('em',null,t.hli)),h('p',null,t.desc)),
+      h('div',{className:'mrow'},
+        h('div',{className:'mi'},h('span',{className:'mv'},t.dur),h('span',{className:'ml'},'Est. time')),
+        h('div',{className:'mi'},h('span',{className:'mv'},t.count),h('span',{className:'ml'},'Items')),
+        h('div',{className:'mi'},h('span',{className:'mv'},'24h'),h('span',{className:'ml'},'Review')),
+      ),
+      h('div',{className:'instrs'},
+        h('div',{className:'ih'},'Instructions'),
+        t.instrs.map((x,i)=>h('div',{key:i,className:'ii'},h('div',{className:'in'},i+1),h('div',{className:'it'},x)))
+      ),
+      h('div',{className:'cbox'},'🔒 Your submission will be anonymised and licensed to AI companies for model training. You retain the right to request deletion at any time.'),
+    ),
+    h('div',{className:'abar'},h('button',{className:'btn ba fw',onClick:startTask},'Start Task →')),
+  );
+}
+
+// VOICE
+function VoiceTask(){
+  const t=use(s=>s.task);
+  const[idx,si]=useState(0);
+  const[rec,sr]=useState(false);
+  const[done,sd]=useState([]);
+  const[skipped,ss]=useState(0);
+  const tmr=useRef(null);
+  const phrases=t?.phrases||[];
+  const start=()=>{sr(true);tmr.current=setTimeout(()=>stop(true),4000)};
+  const stop=(auto)=>{
+    clearTimeout(tmr.current);sr(false);
+    if(!auto)return;
+    const nd=[...done,idx];sd(nd);
+    setTimeout(()=>{
+      if(idx+1>=phrases.length||nd.length+skipped>=phrases.length){set({scr:'success'});}
+      else si(i=>i+1);
+    },600);
+  };
+  const skip=()=>{
+    if(skipped>=2){toast('Max 2 skips per task');return;}
+    ss(s=>s+1);
+    if(idx+1>=phrases.length||done.length+skipped+1>=phrases.length){set({scr:'success'});return;}
+    si(i=>i+1);
+  };
+  return h('div',{className:'screen'},
+    h('div',{className:'back-row'},h('button',{className:'bbtn',onClick:()=>set({scr:'detail',prev:'home'})},'←'),h('span',{className:'btitle'},t?.lang+' Phrases'),h('span',{style:{fontSize:'.78rem',color:'var(--muted)'}},`${idx+1}/${phrases.length}`)),
+    h('div',{className:'rbody'},
+      h('div',{className:'pc'},h('div',{className:'pnum'},`Phrase ${idx+1} of ${phrases.length}`),h('div',{className:'ptxt'},phrases[idx]?.t),phrases[idx]?.r&&h('div',{className:'ptrans'},phrases[idx].r)),
+      h('div',{className:'dots'},phrases.map((_,i)=>h('div',{key:i,className:`dot${done.includes(i)?' done':i===idx?' now':''}`}))),
+      rec?h('div',{className:'wform'},Array.from({length:7},(_,i)=>h('div',{key:i,className:'wb'})))
+         :h('div',{className:'ibars'},[8,14,6,18,10,14,8].map((ht,i)=>h('div',{key:i,className:'ib',style:{height:ht+'px'}}))),
+      h('button',{className:`rbtn${rec?' rec':''}`,onClick:()=>rec?stop(true):start()},rec?'⏹':'🎙️'),
+      h('div',{className:'rhint'},rec?'Recording… tap to stop':done.includes(idx)?'✓ Recorded — tap to re-record':'Tap to start recording'),
+    ),
+    h('div',{style:{padding:'1rem 1.1rem',borderTop:'1px solid var(--bdr)',flexShrink:0}},
+      h('button',{className:'btn bg fw',onClick:skip},'Skip this phrase'),
+    )
+  );
+}
+
+// VIDEO
+function VideoTask(){
+  const[rec,sr]=useState(false);
+  const[secs,ss]=useState(0);
+  const tmr=useRef(null);
+  const toggle=()=>{
+    if(rec){clearInterval(tmr.current);sr(false);if(secs>=5)setTimeout(()=>set({scr:'success'}),400);else toast('Record at least 5 seconds');}
+    else{ss(0);sr(true);tmr.current=setInterval(()=>ss(s=>{if(s>=35){clearInterval(tmr.current);sr(false);setTimeout(()=>set({scr:'success'}),400);return 35;}return s+1;}),1000);}
+  };
+  return h('div',{className:'screen'},
+    h('div',{className:'back-row'},h('button',{className:'bbtn',onClick:()=>set({scr:'detail'})},'←'),h('span',{className:'btitle'},'Video Task'),h('span',{style:{fontSize:'.78rem',color:'var(--muted)'}},'25–35 sec')),
+    h('div',{className:'vid-area'},
+      h('div',{style:{width:'100%',height:'100%',background:'var(--s1)',display:'flex',alignItems:'center',justifyContent:'center',flexDirection:'column',gap:'.75rem'}},
+        h('span',{style:{fontSize:'3rem'}},'📷'),
+        h('p',{style:{fontSize:'.8rem',color:'var(--muted)',textAlign:'center',maxWidth:'180px',lineHeight:1.5}},rec?'Recording in progress…':'Camera preview\n(needs HTTPS + permissions in prod)'),
+      ),
+      h('div',{className:'vid-over'},
+        h('div',{style:{alignSelf:'flex-end',background:'rgba(0,0,0,.6)',padding:'.3rem .7rem',fontSize:'.78rem',color:'#fff',fontWeight:600}},
+          rec?`${String(Math.floor(secs/60)).padStart(2,'0')}:${String(secs%60).padStart(2,'0')} ●`:'0:00 / 0:35'
+        ),
+        h('div',{style:{display:'flex',alignItems:'center',justifyContent:'center',gap:'1.5rem',width:'100%'}},
+          h('div',{style:{width:'40px'}}),
+          h('button',{className:`vbtn${rec?' rec':''}`,onClick:toggle},h('div',{className:'vi'})),
+          h('div',{style:{width:'40px'}}),
+        )
+      )
+    ),
+    h('div',{style:{padding:'.75rem 1.1rem',borderTop:'1px solid var(--bdr)',flexShrink:0,fontSize:'.78rem',color:'var(--muted)',textAlign:'center',lineHeight:1.5}},'Hold camera steady · Hands visible · 25–35 seconds')
+  );
+}
+
+// PHOTO
+function PhotoTask(){
+  const t=use(s=>s.task);
+  const[photos,sp]=useState([]);
+  const fr=useRef(null);
+  const req=t?.count||10;
+  const addP=(e)=>{
+    Array.from(e.target.files||[]).forEach(f=>{
+      const url=URL.createObjectURL(f);
+      sp(p=>p.length<req?[...p,url]:p);
+    });
+  };
+  return h('div',{className:'screen'},
+    h('div',{className:'back-row'},h('button',{className:'bbtn',onClick:()=>set({scr:'detail'})},'←'),h('span',{className:'btitle'},'Photo Task'),h('span',{style:{fontSize:'.78rem',color:'var(--muted)'}},`${photos.length}/${req}`)),
+    h('div',{className:'scroller'},
+      h('div',{style:{padding:'.75rem 1.1rem .4rem',fontSize:'.78rem',color:'var(--cream-d)',lineHeight:1.5}},`Upload ${req} outdoor street scene photos. Natural light, no faces.`),
+      h('div',{className:'pgrid'},
+        Array.from({length:req},(_,i)=>
+          photos[i]
+            ?h('div',{key:i,className:'pcell'},h('img',{src:photos[i],alt:''}),h('div',{className:'prm',onClick:()=>sp(p=>p.filter((_,j)=>j!==i))},'✕'))
+            :h('div',{key:i,className:'pcell'},h('span',null,'📷'),h('p',{className:'pcell-lbl'},`Photo ${i+1}`))
+        )
+      ),
+    ),
+    h('div',{className:'pact'},
+      h('button',{className:'pab',onClick:()=>fr.current?.click()},h('span',null,'📷'),'Take Photo'),
+      h('button',{className:'pab',onClick:()=>fr.current?.click()},h('span',null,'🖼️'),'Upload'),
+    ),
+    h('input',{ref:fr,type:'file',accept:'image/*',multiple:true,style:{display:'none'},onChange:addP}),
+    h('div',{className:'abar'},
+      h('button',{className:`btn fw${photos.length>=req?' ba':' bd'}`,onClick:()=>photos.length>=req?set({scr:'success'}):toast(`Add ${req-photos.length} more photos`)},
+        photos.length>=req?'Submit Photos →':`${photos.length}/${req} photos added`
+      )
+    )
+  );
+}
+
+// TEXT
+function TextTask(){
+  const t=use(s=>s.task);
+  const items=t?.txItems||[];
+  const[idx,si]=useState(0);
+  const[ans,sa]=useState({});
+  const sel=(o)=>{
+    sa(a=>({...a,[idx]:o}));
+    setTimeout(()=>{if(idx+1>=items.length)set({scr:'success'});else si(i=>i+1);},400);
+  };
+  return h('div',{className:'screen'},
+    h('div',{className:'back-row'},h('button',{className:'bbtn',onClick:()=>set({scr:'detail'})},'←'),h('span',{className:'btitle'},'Text Task'),h('span',{style:{fontSize:'.78rem',color:'var(--muted)'}},`${idx+1}/${items.length}`)),
+    h('div',{className:'scroller'},
+      h('div',{className:'pw',style:{borderBottom:'none'}},
+        h('div',{className:'ph'},h('span',{className:'pl'},'Progress'),h('span',{className:'pv'},`${idx+1}/${items.length}`)),
+        h('div',{className:'pt'},h('div',{className:'pf',style:{width:`${(idx/items.length)*100}%`}})),
+      ),
+      items[idx]&&h('div',{className:'txcard'},
+        h('div',{className:'txsrc'},items[idx].t),
+        h('div',{className:'lchs'},items[idx].o.map(o=>h('div',{key:o,className:`lch${ans[idx]===o?' on':''}`,onClick:()=>sel(o)},o))),
+      ),
+    ),
+    h('div',{className:'abar',style:{display:'flex',gap:'.6rem'}},
+      idx>0&&h('button',{className:'btn bg',style:{flex:1},onClick:()=>si(i=>i-1)},'← Back'),
+      h('button',{className:'btn bd',style:{flex:1},onClick:()=>{if(idx+1<items.length)si(i=>i+1);else set({scr:'success'})}},'Skip'),
+    )
+  );
+}
+
+// SUCCESS
+function Success(){
+  const t=use(s=>s.task);
+  return h('div',{className:'screen'},
+    h('div',{className:'sbody fin'},
+      h('div',{className:'sicon'},'✓'),
+      h('h2',null,'Task ',h('em',null,'submitted!')),
+      h('p',null,'Your submission is under review. You\'ll be notified when approved — usually within 24 hours.'),
+      h('div',{className:'ecard'},h('div',{className:'elbl'},'Pending earnings'),h('div',{className:'eamt'},'₹'+(t?.pay||0)),h('div',{className:'esub'},'Added on approval')),
+      h('button',{className:'btn ba fw',style:{maxWidth:'280px'},onClick:()=>tab('home')},'Back to Tasks →'),
+      h('button',{className:'btn bg fw',style:{maxWidth:'280px'},onClick:()=>tab('earnings')},'View Earnings'),
+    )
+  );
+}
+
+// EARNINGS
+function Earnings(){
+  const bal=use(s=>s.bal);
+  return h('div',{className:'screen'},
+    h('div',{className:'topbar'},h('div',{className:'tlogo'},'cllctd',h('span',null,'.'))),
+    h('div',{className:'scroller'},
+      h('div',{style:{padding:'.85rem 1.1rem .5rem',fontFamily:"'Playfair Display',serif",fontSize:'1.3rem',fontWeight:700,color:'var(--cream)'}},
+        'Your ',h('em',{style:{fontStyle:'italic',color:'var(--amber)'}},'earnings.')
+      ),
+      h('div',{className:'balcard'},h('div',{className:'blbl'},'Available balance'),h('div',{className:'bamt'},'₹'+bal.toLocaleString()),h('div',{className:'bpend'},'+ ',h('strong',null,'₹410 pending'),' review')),
+      h('div',{className:'wdrow'},
+        [['📲','UPI'],['🏦','Bank'],['₿','USDC'],['🎯','Points']].map(([ico,lbl],i)=>
+          h('button',{key:i,className:`wdb${i===0?' on':''}`,onClick:()=>toast(`${lbl} withdrawal — live in production app`)},h('span',{className:'wdi'},ico),lbl)
+        )
+      ),
+      h('div',{className:'slbl'},'Transaction History'),
+      HIST.map((x,i)=>
+        h('div',{key:i,className:'txn'},
+          h('div',null,h('div',{className:'xtask'},x.task),h('div',{className:'xdate'},x.date)),
+          h('div',{style:{textAlign:'right'}},h('div',{className:`xamt ${x.type}`},x.amt),h('div',{className:`xst ${x.st}`},x.st)),
+        )
+      ),
+      h('div',{style:{padding:'1rem 1.1rem'}},
+        h('div',{style:{background:'var(--s1)',border:'1px solid var(--bdr2)',padding:'1rem',textAlign:'center'}},
+          h('div',{style:{fontSize:'.78rem',color:'var(--cream-d)',marginBottom:'.35rem',fontWeight:600}},'Refer a friend'),
+          h('div',{style:{fontSize:'.78rem',color:'var(--muted)',lineHeight:1.5}},'Earn ₹100 for every approved contributor you refer'),
+          h('button',{className:'btn ba',style:{marginTop:'.75rem',fontSize:'.72rem'},onClick:()=>toast('Referral link copied!')},'Share Referral Link'),
+        )
+      ),
+      h('div',{style:{height:'1rem'}}),
+    ),
+    h(BNav,{a:'earnings'}),
+  );
+}
+
+// PROFILE
+function Profile(){
+  const user=use(s=>s.user);
+  const name=user?.name||'User';
+  const lang=user?.lang||'Hindi';
+  return h('div',{className:'screen'},
+    h('div',{className:'topbar'},h('div',{className:'tlogo'},'cllctd',h('span',null,'.'))),
+    h('div',{className:'scroller'},
+      h('div',{className:'phead'},
+        h('div',{className:'ava'},'🙋'),
+        h('div',{className:'pname'},name),
+        h('div',{className:'plang'},lang+' · Mumbai, Maharashtra'),
+        h('div',{className:'pbadges'},h('span',{className:'pbadge g'},'⭐ Top Contributor'),h('span',{className:'pbadge'},'Voice Verified'),h('span',{className:'pbadge'},'KYC Done')),
+      ),
+      h('div',{className:'srow'},
+        h('div',{className:'sbox'},h('span',{className:'sv'},'247'),h('span',{className:'sl'},'Tasks')),
+        h('div',{className:'sbox'},h('span',{className:'sv'},'₹18k'),h('span',{className:'sl'},'Earned')),
+        h('div',{className:'sbox'},h('span',{className:'sv'},'91%'),h('span',{className:'sl'},'Quality')),
+      ),
+      h('div',{className:'qbar'},h('div',{className:'qrow'},h('span',{className:'ql'},'Quality Score'),h('span',{className:'qv'},'91% — Excellent')),h('div',{className:'qtrk'},h('div',{className:'qfil'}))),
+      h('div',{className:'psec'},'Account'),
+      [['🌐','Languages',lang+', Tamil'],['📲','Payout Method','UPI'],['🪪','Identity','Verified ✓']].map(([ico,lbl,val])=>
+        h('div',{key:lbl,className:'pitem',onClick:()=>toast(lbl+': '+val)},h('div',{className:'pil'},h('span',{className:'pico'},ico),h('span',{className:'pilbl'},lbl)),h('span',{className:'pir'},val+' →'))
+      ),
+      h('div',{className:'psec'},'Notifications'),
+      [['🔔','Task alerts','On'],['✅','Approval alerts','On'],['🎯','Bonus campaigns','On']].map(([ico,lbl,val])=>
+        h('div',{key:lbl,className:'pitem',onClick:()=>toast('Toggle '+lbl)},h('div',{className:'pil'},h('span',{className:'pico'},ico),h('span',{className:'pilbl'},lbl)),h('span',{className:'pir'},val+' →'))
+      ),
+      h('div',{className:'psec'},'Data & Privacy'),
+      [['🔒','My Data Rights','View'],['📄','Consent Records','Download'],['👥','Refer & Earn','₹100/referral'],['🚪','Delete Account','']].map(([ico,lbl,val])=>
+        h('div',{key:lbl,className:'pitem',onClick:()=>toast(lbl)},
+          h('div',{className:'pil'},h('span',{className:'pico'},ico),h('span',{className:'pilbl'},lbl)),
+          h('span',{className:'pir',style:lbl==='Refer & Earn'?{color:'var(--amber)'}:{}},(val||'Delete')+(val?' →':''))
+        )
+      ),
+      h('div',{style:{height:'1.5rem'}}),
+    ),
+    h(BNav,{a:'profile'}),
+  );
+}
+
+// APP ROUTER
+const SCREENS={splash:Splash,phone:Phone,otp:OTP,profileSetup:ProfileSetup,payout:Payout,home:Home,detail:Detail,voice:VoiceTask,video:VideoTask,photo:PhotoTask,text:TextTask,success:Success,earnings:Earnings,profile:Profile};
+function App(){
+  const scr=use(s=>s.scr);
+  const Cur=SCREENS[scr]||Home;
+  return h('div',{className:'app'},h(Cur),h(Toast));
+}
+
+createRoot(document.getElementById('root')).render(h(App));
+if('serviceWorker'in navigator)window.addEventListener('load',()=>navigator.serviceWorker.register('/sw.js').catch(()=>{}));
+</script>
+</body>
+</html>
