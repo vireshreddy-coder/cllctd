@@ -1,0 +1,1361 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>cllctd — Vendor Onboarding</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@400;700;900&family=Instrument+Sans:wght@300;400;500;600&display=swap" rel="stylesheet">
+<style>
+  *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+  :root {
+    --bg:       #0c0b09;
+    --bg2:      #111009;
+    --surf1:    #161410;
+    --surf2:    #1c1a14;
+    --border:   #2a2720;
+    --border2:  #333028;
+    --amber:    #f0a832;
+    --amber-d:  #d49020;
+    --amber-bg: #1e1608;
+    --cream:    #f5f0e8;
+    --cream-d:  #b8b0a0;
+    --muted:    #6a6458;
+    --blue:     #47d4ff;
+    --green:    #5ec45e;
+    --red:      #e05030;
+  }
+
+  html { scroll-behavior: smooth; }
+
+  body {
+    background: var(--bg);
+    color: var(--cream);
+    font-family: 'Instrument Sans', sans-serif;
+    font-weight: 400;
+    line-height: 1.6;
+    cursor: none;
+    min-height: 100vh;
+  }
+
+  /* Custom cursor */
+  .cursor {
+    position: fixed; top: 0; left: 0; z-index: 9999;
+    width: 10px; height: 10px;
+    background: var(--amber);
+    border-radius: 50%;
+    pointer-events: none;
+    transition: transform 0.15s ease, opacity 0.2s ease;
+    transform: translate(-50%, -50%);
+  }
+  .cursor-ring {
+    position: fixed; top: 0; left: 0; z-index: 9998;
+    width: 32px; height: 32px;
+    border: 1px solid rgba(240,168,50,0.4);
+    border-radius: 50%;
+    pointer-events: none;
+    transition: transform 0.35s ease, opacity 0.2s ease;
+    transform: translate(-50%, -50%);
+  }
+  body:has(a:hover) .cursor, body:has(button:hover) .cursor,
+  body:has(input:hover) .cursor, body:has(select:hover) .cursor { transform: translate(-50%, -50%) scale(2.5); }
+  body:has(a:hover) .cursor-ring, body:has(button:hover) .cursor-ring { transform: translate(-50%, -50%) scale(0.5); opacity: 0; }
+
+  /* Nav */
+  nav {
+    position: fixed; top: 0; left: 0; right: 0; z-index: 100;
+    display: flex; align-items: center; justify-content: space-between;
+    padding: 0 2.5rem;
+    height: 60px;
+    background: rgba(12,11,9,0.85);
+    backdrop-filter: blur(16px);
+    border-bottom: 1px solid var(--border);
+  }
+
+  .nav-logo {
+    font-family: 'Playfair Display', serif;
+    font-size: 1.5rem;
+    font-weight: 900;
+    color: var(--cream);
+    text-decoration: none;
+    letter-spacing: -0.02em;
+  }
+  .nav-logo span { color: var(--amber); }
+
+  .nav-steps {
+    display: flex; align-items: center; gap: 0;
+  }
+  .nav-step {
+    display: flex; align-items: center; gap: 0.5rem;
+    padding: 0 1.2rem;
+    font-size: 0.75rem;
+    font-weight: 500;
+    letter-spacing: 0.08em;
+    text-transform: uppercase;
+    color: var(--muted);
+    transition: color 0.2s;
+    cursor: pointer;
+    border: none; background: none;
+  }
+  .nav-step.active { color: var(--amber); }
+  .nav-step.done { color: var(--green); }
+  .nav-step .step-num {
+    width: 20px; height: 20px;
+    border-radius: 50%;
+    border: 1px solid currentColor;
+    display: flex; align-items: center; justify-content: center;
+    font-size: 0.65rem; flex-shrink: 0;
+  }
+  .nav-step.done .step-num {
+    background: var(--green);
+    border-color: var(--green);
+    color: var(--bg);
+  }
+  .step-divider {
+    width: 28px; height: 1px;
+    background: var(--border);
+  }
+
+  .nav-right {
+    display: flex; align-items: center; gap: 1rem;
+  }
+  .nav-save {
+    font-size: 0.75rem;
+    color: var(--muted);
+    font-family: 'Instrument Sans', sans-serif;
+  }
+  .nav-save.saved { color: var(--green); }
+
+  /* Progress bar */
+  .progress-bar {
+    position: fixed; top: 60px; left: 0; right: 0; z-index: 99;
+    height: 2px;
+    background: var(--border);
+  }
+  .progress-fill {
+    height: 100%;
+    background: var(--amber);
+    transition: width 0.5s ease;
+    width: 20%;
+  }
+
+  /* Layout */
+  .page {
+    display: none;
+    min-height: 100vh;
+    padding-top: 80px;
+  }
+  .page.active { display: block; }
+
+  /* ── WELCOME SCREEN ── */
+  .welcome {
+    max-width: 800px;
+    margin: 0 auto;
+    padding: 5rem 2rem 4rem;
+  }
+  .welcome-tag {
+    display: inline-flex; align-items: center; gap: 0.5rem;
+    background: var(--amber-bg);
+    border: 1px solid rgba(240,168,50,0.2);
+    border-radius: 2px;
+    padding: 0.3rem 0.8rem;
+    font-size: 0.7rem;
+    font-weight: 600;
+    letter-spacing: 0.12em;
+    text-transform: uppercase;
+    color: var(--amber);
+    margin-bottom: 2rem;
+  }
+  .welcome-tag::before { content: ''; width: 6px; height: 6px; background: var(--amber); border-radius: 50%; }
+
+  .welcome h1 {
+    font-family: 'Playfair Display', serif;
+    font-size: clamp(3rem, 6vw, 5.5rem);
+    font-weight: 900;
+    line-height: 1.0;
+    letter-spacing: -0.03em;
+    color: var(--cream);
+    margin-bottom: 1.5rem;
+  }
+  .welcome h1 em {
+    font-style: italic;
+    color: var(--amber);
+  }
+
+  .welcome-lead {
+    font-size: 1.1rem;
+    color: var(--cream-d);
+    max-width: 540px;
+    margin-bottom: 3rem;
+    line-height: 1.7;
+  }
+
+  .welcome-types {
+    display: grid;
+    grid-template-columns: repeat(2, 1fr);
+    gap: 1px;
+    background: var(--border);
+    border: 1px solid var(--border);
+    margin-bottom: 2.5rem;
+  }
+  .vendor-type {
+    background: var(--surf1);
+    padding: 1.5rem;
+    cursor: pointer;
+    transition: background 0.2s;
+    position: relative;
+  }
+  .vendor-type:hover { background: var(--surf2); }
+  .vendor-type.selected {
+    background: var(--amber-bg);
+    outline: 1px solid var(--amber);
+    outline-offset: -1px;
+  }
+  .vendor-type input[type="radio"] { display: none; }
+  .vendor-type-icon {
+    font-size: 1.8rem;
+    margin-bottom: 0.75rem;
+    display: block;
+  }
+  .vendor-type h3 {
+    font-family: 'Instrument Sans', sans-serif;
+    font-size: 0.85rem;
+    font-weight: 600;
+    letter-spacing: 0.05em;
+    text-transform: uppercase;
+    color: var(--cream);
+    margin-bottom: 0.4rem;
+  }
+  .vendor-type p {
+    font-size: 0.85rem;
+    color: var(--muted);
+    line-height: 1.5;
+  }
+  .vendor-type.selected h3 { color: var(--amber); }
+  .vendor-type .check {
+    position: absolute; top: 1rem; right: 1rem;
+    width: 18px; height: 18px;
+    border: 1px solid var(--border2);
+    border-radius: 50%;
+    display: flex; align-items: center; justify-content: center;
+    font-size: 0.6rem;
+    color: transparent;
+    transition: all 0.2s;
+  }
+  .vendor-type.selected .check {
+    background: var(--amber);
+    border-color: var(--amber);
+    color: var(--bg);
+  }
+
+  /* Buttons */
+  .btn-primary {
+    display: inline-flex; align-items: center; gap: 0.6rem;
+    background: var(--amber);
+    color: var(--bg);
+    border: none;
+    padding: 0.85rem 1.8rem;
+    font-family: 'Instrument Sans', sans-serif;
+    font-size: 0.85rem;
+    font-weight: 600;
+    letter-spacing: 0.06em;
+    text-transform: uppercase;
+    cursor: pointer;
+    transition: background 0.2s, transform 0.15s;
+  }
+  .btn-primary:hover { background: var(--amber-d); transform: translateY(-1px); }
+  .btn-primary:active { transform: translateY(0); }
+
+  .btn-secondary {
+    display: inline-flex; align-items: center; gap: 0.6rem;
+    background: transparent;
+    color: var(--cream-d);
+    border: 1px solid var(--border2);
+    padding: 0.85rem 1.5rem;
+    font-family: 'Instrument Sans', sans-serif;
+    font-size: 0.85rem;
+    font-weight: 500;
+    letter-spacing: 0.04em;
+    cursor: pointer;
+    transition: border-color 0.2s, color 0.2s;
+  }
+  .btn-secondary:hover { border-color: var(--cream-d); color: var(--cream); }
+
+  .btn-group {
+    display: flex; align-items: center; gap: 1rem;
+    margin-top: 2rem;
+  }
+
+  /* ── FORM PAGES ── */
+  .form-layout {
+    display: grid;
+    grid-template-columns: 260px 1fr;
+    min-height: calc(100vh - 80px);
+  }
+
+  .form-sidebar {
+    background: var(--surf1);
+    border-right: 1px solid var(--border);
+    padding: 2.5rem 1.5rem;
+    position: sticky; top: 80px;
+    height: calc(100vh - 80px);
+    overflow-y: auto;
+  }
+
+  .sidebar-section {
+    margin-bottom: 2.5rem;
+  }
+  .sidebar-label {
+    font-size: 0.65rem;
+    font-weight: 600;
+    letter-spacing: 0.14em;
+    text-transform: uppercase;
+    color: var(--muted);
+    margin-bottom: 0.75rem;
+    display: block;
+  }
+  .sidebar-info {
+    font-size: 0.8rem;
+    color: var(--cream-d);
+    line-height: 1.6;
+  }
+  .sidebar-tip {
+    background: var(--amber-bg);
+    border-left: 2px solid var(--amber);
+    padding: 0.75rem 1rem;
+    font-size: 0.78rem;
+    color: var(--cream-d);
+    line-height: 1.6;
+    margin-top: 1rem;
+  }
+  .sidebar-tip strong { color: var(--amber); display: block; margin-bottom: 0.25rem; font-size: 0.72rem; letter-spacing: 0.06em; text-transform: uppercase; }
+
+  .completeness {
+    background: var(--bg2);
+    border: 1px solid var(--border);
+    padding: 1rem;
+  }
+  .completeness-label {
+    display: flex; justify-content: space-between; align-items: center;
+    font-size: 0.72rem;
+    color: var(--muted);
+    margin-bottom: 0.5rem;
+  }
+  .completeness-pct { color: var(--amber); font-weight: 600; }
+  .completeness-track {
+    height: 3px;
+    background: var(--border);
+    border-radius: 2px;
+    overflow: hidden;
+  }
+  .completeness-fill {
+    height: 100%;
+    background: var(--amber);
+    border-radius: 2px;
+    transition: width 0.4s ease;
+    width: 0%;
+  }
+
+  .form-main {
+    padding: 3rem 4rem 4rem;
+    max-width: 680px;
+  }
+
+  .form-section-title {
+    font-family: 'Playfair Display', serif;
+    font-size: 2.2rem;
+    font-weight: 700;
+    color: var(--cream);
+    letter-spacing: -0.02em;
+    margin-bottom: 0.5rem;
+  }
+  .form-section-sub {
+    font-size: 0.9rem;
+    color: var(--cream-d);
+    margin-bottom: 2.5rem;
+    line-height: 1.6;
+  }
+
+  /* Form fields */
+  .field-group {
+    margin-bottom: 1.75rem;
+  }
+  .field-row {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 1rem;
+    margin-bottom: 1.75rem;
+  }
+
+  label {
+    display: block;
+    font-size: 0.75rem;
+    font-weight: 600;
+    letter-spacing: 0.08em;
+    text-transform: uppercase;
+    color: var(--cream-d);
+    margin-bottom: 0.5rem;
+  }
+  label .req { color: var(--amber); margin-left: 2px; }
+  label .hint {
+    font-size: 0.68rem;
+    font-weight: 400;
+    text-transform: none;
+    letter-spacing: 0;
+    color: var(--muted);
+    margin-left: 0.4rem;
+  }
+
+  input[type="text"],
+  input[type="email"],
+  input[type="url"],
+  input[type="number"],
+  select,
+  textarea {
+    width: 100%;
+    background: var(--surf1);
+    border: 1px solid var(--border2);
+    color: var(--cream);
+    font-family: 'Instrument Sans', sans-serif;
+    font-size: 0.9rem;
+    padding: 0.75rem 1rem;
+    outline: none;
+    transition: border-color 0.2s, background 0.2s;
+    -webkit-appearance: none;
+  }
+  input:focus, select:focus, textarea:focus {
+    border-color: var(--amber);
+    background: var(--surf2);
+  }
+  input::placeholder, textarea::placeholder { color: var(--muted); }
+
+  select {
+    background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='8' viewBox='0 0 12 8'%3E%3Cpath fill='%236a6458' d='M6 8L0 0h12z'/%3E%3C/svg%3E");
+    background-repeat: no-repeat;
+    background-position: right 1rem center;
+    padding-right: 2.5rem;
+    cursor: pointer;
+  }
+  select option { background: var(--surf2); color: var(--cream); }
+
+  textarea { resize: vertical; min-height: 100px; line-height: 1.6; }
+
+  .field-error {
+    font-size: 0.72rem;
+    color: var(--red);
+    margin-top: 0.35rem;
+    display: none;
+  }
+  .field-group.invalid input,
+  .field-group.invalid select,
+  .field-group.invalid textarea { border-color: var(--red); }
+  .field-group.invalid .field-error { display: block; }
+  .field-group.valid input,
+  .field-group.valid select,
+  .field-group.valid textarea { border-color: var(--green); }
+
+  /* File upload zone */
+  .upload-zone {
+    border: 1px dashed var(--border2);
+    background: var(--surf1);
+    padding: 2rem;
+    text-align: center;
+    cursor: pointer;
+    transition: border-color 0.2s, background 0.2s;
+    position: relative;
+  }
+  .upload-zone:hover, .upload-zone.dragover {
+    border-color: var(--amber);
+    background: var(--amber-bg);
+  }
+  .upload-zone input[type="file"] {
+    position: absolute; inset: 0;
+    width: 100%; height: 100%;
+    opacity: 0; cursor: pointer;
+  }
+  .upload-zone-icon { font-size: 2rem; margin-bottom: 0.5rem; display: block; }
+  .upload-zone-text { font-size: 0.85rem; color: var(--cream-d); }
+  .upload-zone-text strong { color: var(--amber); }
+  .upload-zone-meta { font-size: 0.72rem; color: var(--muted); margin-top: 0.3rem; }
+  .upload-files-list { margin-top: 1rem; text-align: left; }
+  .upload-file-item {
+    display: flex; align-items: center; justify-content: space-between;
+    background: var(--surf2);
+    padding: 0.5rem 0.75rem;
+    margin-top: 0.4rem;
+    font-size: 0.8rem;
+    color: var(--cream-d);
+  }
+  .upload-file-item span { color: var(--green); font-size: 0.7rem; }
+
+  /* Checkboxes / pills */
+  .pill-group {
+    display: flex; flex-wrap: wrap; gap: 0.5rem;
+    margin-top: 0.5rem;
+  }
+  .pill {
+    display: inline-flex; align-items: center; gap: 0.4rem;
+    border: 1px solid var(--border2);
+    padding: 0.35rem 0.8rem;
+    font-size: 0.78rem;
+    color: var(--cream-d);
+    cursor: pointer;
+    transition: all 0.15s;
+    user-select: none;
+  }
+  .pill:hover { border-color: var(--cream-d); color: var(--cream); }
+  .pill.selected {
+    background: var(--amber-bg);
+    border-color: var(--amber);
+    color: var(--amber);
+  }
+  .pill input { display: none; }
+
+  /* Range slider */
+  .range-wrap { position: relative; padding-bottom: 1.5rem; }
+  input[type="range"] {
+    -webkit-appearance: none;
+    width: 100%;
+    height: 3px;
+    background: var(--border2);
+    border: none;
+    padding: 0;
+    cursor: pointer;
+  }
+  input[type="range"]::-webkit-slider-thumb {
+    -webkit-appearance: none;
+    width: 16px; height: 16px;
+    background: var(--amber);
+    border-radius: 50%;
+    cursor: pointer;
+  }
+  .range-labels {
+    display: flex; justify-content: space-between;
+    font-size: 0.68rem;
+    color: var(--muted);
+    margin-top: 0.35rem;
+    position: absolute; bottom: 0; left: 0; right: 0;
+  }
+  .range-value {
+    font-size: 1.1rem;
+    font-weight: 600;
+    color: var(--amber);
+    margin-bottom: 0.5rem;
+  }
+
+  /* Section divider */
+  .form-divider {
+    border: none;
+    border-top: 1px solid var(--border);
+    margin: 2.5rem 0;
+  }
+
+  /* Consent checkboxes */
+  .consent-item {
+    display: flex; align-items: flex-start; gap: 0.75rem;
+    padding: 1rem;
+    background: var(--surf1);
+    border: 1px solid var(--border);
+    margin-bottom: 0.75rem;
+    cursor: pointer;
+    transition: border-color 0.2s;
+  }
+  .consent-item:hover { border-color: var(--border2); }
+  .consent-item.checked { border-color: var(--green); }
+  .consent-check {
+    width: 18px; height: 18px; flex-shrink: 0;
+    border: 1px solid var(--border2);
+    display: flex; align-items: center; justify-content: center;
+    font-size: 0.65rem;
+    color: transparent;
+    margin-top: 2px;
+    transition: all 0.15s;
+  }
+  .consent-item.checked .consent-check {
+    background: var(--green);
+    border-color: var(--green);
+    color: var(--bg);
+  }
+  .consent-item input { display: none; }
+  .consent-text { font-size: 0.85rem; color: var(--cream-d); line-height: 1.6; }
+  .consent-text strong { color: var(--cream); display: block; margin-bottom: 0.2rem; font-size: 0.85rem; }
+
+  /* ── SUCCESS PAGE ── */
+  .success-page {
+    display: flex; align-items: center; justify-content: center;
+    min-height: calc(100vh - 80px);
+    text-align: center;
+    padding: 2rem;
+  }
+  .success-inner { max-width: 560px; }
+  .success-icon {
+    width: 72px; height: 72px;
+    background: rgba(94,196,94,0.1);
+    border: 1px solid rgba(94,196,94,0.3);
+    border-radius: 50%;
+    display: flex; align-items: center; justify-content: center;
+    font-size: 2rem;
+    margin: 0 auto 2rem;
+    animation: popIn 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275) forwards;
+  }
+  @keyframes popIn {
+    from { transform: scale(0.5); opacity: 0; }
+    to { transform: scale(1); opacity: 1; }
+  }
+  .success-inner h2 {
+    font-family: 'Playfair Display', serif;
+    font-size: 2.5rem;
+    font-weight: 700;
+    color: var(--cream);
+    margin-bottom: 1rem;
+    letter-spacing: -0.02em;
+  }
+  .success-inner p {
+    color: var(--cream-d);
+    font-size: 0.95rem;
+    line-height: 1.7;
+    margin-bottom: 2rem;
+  }
+  .success-ref {
+    background: var(--surf1);
+    border: 1px solid var(--border2);
+    padding: 1rem 1.5rem;
+    font-size: 0.8rem;
+    color: var(--muted);
+    margin-bottom: 2rem;
+  }
+  .success-ref strong { display: block; color: var(--amber); font-size: 1.1rem; letter-spacing: 0.05em; margin-bottom: 0.2rem; }
+
+  .success-next {
+    display: grid; grid-template-columns: 1fr 1fr; gap: 1px;
+    background: var(--border);
+    border: 1px solid var(--border);
+    text-align: left;
+    margin-bottom: 2rem;
+  }
+  .next-item {
+    background: var(--surf1);
+    padding: 1.25rem;
+  }
+  .next-item .step-tag {
+    font-size: 0.65rem; font-weight: 600; letter-spacing: 0.1em;
+    text-transform: uppercase; color: var(--amber);
+    margin-bottom: 0.4rem;
+  }
+  .next-item h4 { font-size: 0.9rem; color: var(--cream); margin-bottom: 0.3rem; font-weight: 600; }
+  .next-item p { font-size: 0.78rem; color: var(--muted); line-height: 1.5; }
+
+  /* Animations */
+  .page.active .form-section-title,
+  .page.active .form-section-sub,
+  .page.active .field-group,
+  .page.active .field-row,
+  .page.active .btn-group,
+  .page.active .welcome h1,
+  .page.active .welcome-lead,
+  .page.active .welcome-types {
+    animation: fadeUp 0.35s ease both;
+  }
+  .page.active .form-section-sub { animation-delay: 0.05s; }
+  .page.active .field-group:nth-child(1), .page.active .field-row:nth-child(1) { animation-delay: 0.08s; }
+  .page.active .field-group:nth-child(2), .page.active .field-row:nth-child(2) { animation-delay: 0.11s; }
+  .page.active .field-group:nth-child(3), .page.active .field-row:nth-child(3) { animation-delay: 0.14s; }
+  .page.active .field-group:nth-child(4) { animation-delay: 0.17s; }
+  .page.active .field-group:nth-child(5) { animation-delay: 0.20s; }
+  .page.active .btn-group { animation-delay: 0.25s; }
+  .page.active .welcome-lead { animation-delay: 0.1s; }
+  .page.active .welcome-types { animation-delay: 0.15s; }
+
+  @keyframes fadeUp {
+    from { opacity: 0; transform: translateY(16px); }
+    to { opacity: 1; transform: translateY(0); }
+  }
+
+  /* Responsive */
+  @media (max-width: 768px) {
+    .form-layout { grid-template-columns: 1fr; }
+    .form-sidebar { display: none; }
+    .form-main { padding: 2rem 1.5rem; }
+    .field-row { grid-template-columns: 1fr; }
+    .welcome-types { grid-template-columns: 1fr; }
+    nav { padding: 0 1.2rem; }
+    .nav-steps { display: none; }
+  }
+</style>
+</head>
+<body>
+
+<div class="cursor" id="cursor"></div>
+<div class="cursor-ring" id="cursorRing"></div>
+
+<!-- NAV -->
+<nav>
+  <a href="index.html" class="nav-logo">cllctd<span>.</span></a>
+  <div class="nav-steps">
+    <button class="nav-step active" id="navStep1" onclick="goToPage(1)">
+      <span class="step-num">1</span> Vendor Type
+    </button>
+    <div class="step-divider"></div>
+    <button class="nav-step" id="navStep2" onclick="goToPage(2)">
+      <span class="step-num">2</span> Organisation
+    </button>
+    <div class="step-divider"></div>
+    <button class="nav-step" id="navStep3" onclick="goToPage(3)">
+      <span class="step-num">3</span> Data Profile
+    </button>
+    <div class="step-divider"></div>
+    <button class="nav-step" id="navStep4" onclick="goToPage(4)">
+      <span class="step-num">4</span> Compliance
+    </button>
+  </div>
+  <div class="nav-right">
+    <a href="vendors.html" style="font-size:.75rem;color:var(--muted);text-decoration:none;margin-right:1rem;">← Back to Vendor Info</a>
+    <span class="nav-save" id="saveStatus">Draft auto-saved</span>
+  </div>
+</nav>
+
+<div class="progress-bar"><div class="progress-fill" id="progressFill"></div></div>
+
+<!-- ═══ PAGE 1: WELCOME / VENDOR TYPE ═══ -->
+<div class="page active" id="page1">
+  <div class="welcome">
+    <div class="welcome-tag">Vendor Onboarding</div>
+    <h1>Bring your data<br>to the <em>market.</em></h1>
+    <p class="welcome-lead">
+      cllctd connects contributors with the world's leading AI companies. Tell us what you supply and we'll match you with the right buyers. Applications reviewed within 5 business days.
+    </p>
+
+    <p style="font-size:0.75rem;font-weight:600;letter-spacing:0.08em;text-transform:uppercase;color:var(--cream-d);margin-bottom:1rem;">Select your vendor category <span style="color:var(--amber)">*</span></p>
+
+    <div class="welcome-types">
+      <label class="vendor-type" id="vt1" onclick="selectType('hardware')">
+        <input type="radio" name="vendorType" value="hardware">
+        <span class="check">✓</span>
+        <span class="vendor-type-icon">🎥</span>
+        <h3>Hardware Vendor</h3>
+        <p>Egocentric cameras, wearables, smart glasses, industrial sensors. You capture real-world footage at scale.</p>
+      </label>
+      <label class="vendor-type" id="vt2" onclick="selectType('voice')">
+        <input type="radio" name="vendorType" value="voice">
+        <span class="check">✓</span>
+        <span class="vendor-type-icon">🎙️</span>
+        <h3>Voice & Audio Network</h3>
+        <p>Structured voice datasets, regional language recordings, transcribed audio collections across Indian languages.</p>
+      </label>
+      <label class="vendor-type" id="vt3" onclick="selectType('institutional')">
+        <input type="radio" name="vendorType" value="institutional">
+        <span class="check">✓</span>
+        <span class="vendor-type-icon">🏢</span>
+        <h3>Institutional Archive</h3>
+        <p>Hospital records, corporate archives, studio libraries, government datasets with existing licensing frameworks.</p>
+      </label>
+      <label class="vendor-type" id="vt4" onclick="selectType('contributor')">
+        <input type="radio" name="vendorType" value="contributor">
+        <span class="check">✓</span>
+        <span class="vendor-type-icon">📱</span>
+        <h3>Data Contributor Network</h3>
+        <p>You manage a network of individual contributors — gig workers, creator communities, or structured panels.</p>
+      </label>
+    </div>
+
+    <div class="btn-group">
+      <button class="btn-primary" onclick="goToPage(2)">
+        Continue → Organisation Details
+      </button>
+    </div>
+  </div>
+</div>
+
+<!-- ═══ PAGE 2: ORGANISATION ═══ -->
+<div class="page" id="page2">
+  <div class="form-layout">
+    <aside class="form-sidebar">
+      <div class="sidebar-section">
+        <span class="sidebar-label">Step 2 of 4</span>
+        <div class="completeness" id="completeness2">
+          <div class="completeness-label">
+            <span>Profile completeness</span>
+            <span class="completeness-pct" id="comp2Pct">0%</span>
+          </div>
+          <div class="completeness-track">
+            <div class="completeness-fill" id="comp2Fill"></div>
+          </div>
+        </div>
+      </div>
+      <div class="sidebar-section">
+        <span class="sidebar-label">Why this matters</span>
+        <p class="sidebar-info">Enterprise buyers conduct due diligence before every dataset purchase. A complete organisation profile speeds up deal closure by an average of 12 days.</p>
+      </div>
+      <div class="sidebar-section">
+        <div class="sidebar-tip">
+          <strong>💡 Pro tip</strong>
+          Vendors with a registered company entity close their first deal 3× faster than individuals. If you're not yet registered, mention your timeline.
+        </div>
+      </div>
+    </aside>
+
+    <main class="form-main">
+      <h2 class="form-section-title">Organisation</h2>
+      <p class="form-section-sub">Tell us about the company or entity supplying data through cllctd.</p>
+
+      <div class="field-group" id="fg-orgName">
+        <label>Organisation Name <span class="req">*</span></label>
+        <input type="text" id="orgName" placeholder="e.g. Axiom Capture Pvt Ltd" oninput="validateField('orgName','fg-orgName')">
+        <span class="field-error">Organisation name is required</span>
+      </div>
+
+      <div class="field-row">
+        <div class="field-group" id="fg-country">
+          <label>Country of Registration <span class="req">*</span></label>
+          <select id="country" onchange="validateField('country','fg-country')">
+            <option value="">Select country</option>
+            <option value="IN">India</option>
+            <option value="AE">UAE</option>
+            <option value="US">United States</option>
+            <option value="GB">United Kingdom</option>
+            <option value="SG">Singapore</option>
+            <option value="other">Other</option>
+          </select>
+          <span class="field-error">Please select a country</span>
+        </div>
+        <div class="field-group" id="fg-founded">
+          <label>Year Founded <span class="hint">(optional)</span></label>
+          <input type="number" id="founded" placeholder="2021" min="1900" max="2026">
+        </div>
+      </div>
+
+      <div class="field-row">
+        <div class="field-group" id="fg-contactName">
+          <label>Primary Contact <span class="req">*</span></label>
+          <input type="text" id="contactName" placeholder="Full name" oninput="validateField('contactName','fg-contactName')">
+          <span class="field-error">Contact name is required</span>
+        </div>
+        <div class="field-group" id="fg-contactTitle">
+          <label>Title / Role</label>
+          <input type="text" id="contactTitle" placeholder="e.g. CEO, Head of Partnerships">
+        </div>
+      </div>
+
+      <div class="field-group" id="fg-email">
+        <label>Business Email <span class="req">*</span></label>
+        <input type="email" id="email" placeholder="you@company.com" oninput="validateEmail()">
+        <span class="field-error">Please enter a valid business email</span>
+      </div>
+
+      <div class="field-group">
+        <label>Website <span class="hint">(optional)</span></label>
+        <input type="url" id="website" placeholder="https://yourcompany.com">
+      </div>
+
+      <hr class="form-divider">
+
+      <div class="field-group">
+        <label>Team Size</label>
+        <div class="pill-group" id="teamSize">
+          <label class="pill" onclick="selectPill(this,'teamSize')"><input type="radio" name="teamSize" value="solo">Solo founder</label>
+          <label class="pill" onclick="selectPill(this,'teamSize')"><input type="radio" name="teamSize" value="2-10">2–10</label>
+          <label class="pill" onclick="selectPill(this,'teamSize')"><input type="radio" name="teamSize" value="11-50">11–50</label>
+          <label class="pill" onclick="selectPill(this,'teamSize')"><input type="radio" name="teamSize" value="51-200">51–200</label>
+          <label class="pill" onclick="selectPill(this,'teamSize')"><input type="radio" name="teamSize" value="200+">200+</label>
+        </div>
+      </div>
+
+      <div class="field-group">
+        <label>Brief Description <span class="hint">(2–3 sentences)</span></label>
+        <textarea id="orgDesc" placeholder="What does your organisation do and what makes your data supply unique?"></textarea>
+      </div>
+
+      <div class="btn-group">
+        <button class="btn-secondary" onclick="goToPage(1)">← Back</button>
+        <button class="btn-primary" onclick="validateAndNext(2)">Continue → Data Profile</button>
+      </div>
+    </main>
+  </div>
+</div>
+
+<!-- ═══ PAGE 3: DATA PROFILE ═══ -->
+<div class="page" id="page3">
+  <div class="form-layout">
+    <aside class="form-sidebar">
+      <div class="sidebar-section">
+        <span class="sidebar-label">Step 3 of 4</span>
+        <div class="completeness">
+          <div class="completeness-label">
+            <span>Data profile</span>
+            <span class="completeness-pct" id="comp3Pct">0%</span>
+          </div>
+          <div class="completeness-track">
+            <div class="completeness-fill" id="comp3Fill"></div>
+          </div>
+        </div>
+      </div>
+      <div class="sidebar-section">
+        <span class="sidebar-label">Buyer demand</span>
+        <p class="sidebar-info">Right now our enterprise buyers are actively requesting:</p>
+        <ul style="font-size:0.8rem;color:var(--amber);margin-top:0.5rem;padding-left:1rem;line-height:2">
+          <li>Egocentric construction footage</li>
+          <li>Hindi / Tamil conversational audio</li>
+          <li>Hands + tools close-up video</li>
+          <li>Factory floor worker POV</li>
+          <li>Road & vehicle footage (India)</li>
+        </ul>
+      </div>
+      <div class="sidebar-section">
+        <div class="sidebar-tip">
+          <strong>📦 Sample first</strong>
+          Vendors who submit a sample dataset with their application close their first deal 60% faster. Use the upload below.
+        </div>
+      </div>
+    </aside>
+
+    <main class="form-main">
+      <h2 class="form-section-title">Data Profile</h2>
+      <p class="form-section-sub">Describe the data you supply. Be specific — buyers filter on format, volume, and geography.</p>
+
+      <div class="field-group" id="fg-dataTypes">
+        <label>Data Types <span class="req">*</span> <span class="hint">Select all that apply</span></label>
+        <div class="pill-group" id="dataTypes">
+          <label class="pill" onclick="togglePill(this)"><input type="checkbox" value="video-egocentric">📹 Egocentric Video</label>
+          <label class="pill" onclick="togglePill(this)"><input type="checkbox" value="video-general">🎬 General Video</label>
+          <label class="pill" onclick="togglePill(this)"><input type="checkbox" value="audio-voice">🎙️ Voice / Audio</label>
+          <label class="pill" onclick="togglePill(this)"><input type="checkbox" value="image">🖼️ Images</label>
+          <label class="pill" onclick="togglePill(this)"><input type="checkbox" value="text">📝 Text / Documents</label>
+          <label class="pill" onclick="togglePill(this)"><input type="checkbox" value="sensor">📡 Sensor / IoT</label>
+          <label class="pill" onclick="togglePill(this)"><input type="checkbox" value="medical">🏥 Medical Records</label>
+          <label class="pill" onclick="togglePill(this)"><input type="checkbox" value="geospatial">🗺️ Geospatial</label>
+        </div>
+      </div>
+
+      <div class="field-group">
+        <label>Industry Verticals <span class="hint">Select all that apply</span></label>
+        <div class="pill-group">
+          <label class="pill" onclick="togglePill(this)"><input type="checkbox" value="construction">🏗️ Construction</label>
+          <label class="pill" onclick="togglePill(this)"><input type="checkbox" value="manufacturing">🏭 Manufacturing</label>
+          <label class="pill" onclick="togglePill(this)"><input type="checkbox" value="logistics">🚚 Logistics</label>
+          <label class="pill" onclick="togglePill(this)"><input type="checkbox" value="healthcare">🏥 Healthcare</label>
+          <label class="pill" onclick="togglePill(this)"><input type="checkbox" value="agriculture">🌾 Agriculture</label>
+          <label class="pill" onclick="togglePill(this)"><input type="checkbox" value="retail">🛒 Retail</label>
+          <label class="pill" onclick="togglePill(this)"><input type="checkbox" value="transport">🚗 Transport</label>
+          <label class="pill" onclick="togglePill(this)"><input type="checkbox" value="general">🌐 General / Mixed</label>
+        </div>
+      </div>
+
+      <div class="field-group">
+        <label>Geographic Coverage <span class="hint">Where is the data captured?</span></label>
+        <div class="pill-group">
+          <label class="pill" onclick="togglePill(this)"><input type="checkbox" value="india-north">North India</label>
+          <label class="pill" onclick="togglePill(this)"><input type="checkbox" value="india-south">South India</label>
+          <label class="pill" onclick="togglePill(this)"><input type="checkbox" value="india-east">East India</label>
+          <label class="pill" onclick="togglePill(this)"><input type="checkbox" value="india-west">West India</label>
+          <label class="pill" onclick="togglePill(this)"><input type="checkbox" value="gulf">Gulf / MENA</label>
+          <label class="pill" onclick="togglePill(this)"><input type="checkbox" value="global">Global</label>
+        </div>
+      </div>
+
+      <hr class="form-divider">
+
+      <div class="field-group">
+        <label>Estimated Monthly Volume</label>
+        <div class="range-value" id="volumeDisplay">~10,000 hours / files</div>
+        <div class="range-wrap">
+          <input type="range" id="volumeRange" min="0" max="10" value="4" oninput="updateVolume(this.value)">
+          <div class="range-labels">
+            <span>&lt;1K</span><span>5K</span><span>25K</span><span>100K</span><span>500K+</span>
+          </div>
+        </div>
+      </div>
+
+      <div class="field-row">
+        <div class="field-group">
+          <label>Languages <span class="hint">if audio/text</span></label>
+          <input type="text" id="languages" placeholder="e.g. Hindi, Tamil, Telugu, Marathi">
+        </div>
+        <div class="field-group">
+          <label>Existing Format</label>
+          <select id="format">
+            <option value="">Select primary format</option>
+            <option>MP4 / MOV (video)</option>
+            <option>WAV / MP3 (audio)</option>
+            <option>JPEG / PNG (images)</option>
+            <option>JSON / CSV (structured)</option>
+            <option>PDF / DOCX (documents)</option>
+            <option>Mixed / Multiple</option>
+          </select>
+        </div>
+      </div>
+
+      <div class="field-group">
+        <label>Sample Dataset Upload <span class="hint">Optional but recommended — up to 50MB</span></label>
+        <div class="upload-zone" id="uploadZone">
+          <input type="file" id="sampleUpload" multiple accept="video/*,audio/*,image/*,.csv,.json,.zip" onchange="handleUpload(this)">
+          <span class="upload-zone-icon">📁</span>
+          <p class="upload-zone-text">Drop files here or <strong>click to browse</strong></p>
+          <p class="upload-zone-meta">Video, audio, images, CSV, JSON, ZIP — max 50MB total</p>
+          <div class="upload-files-list" id="uploadList"></div>
+        </div>
+      </div>
+
+      <div class="field-group">
+        <label>Data Description</label>
+        <textarea id="dataDesc" rows="4" placeholder="Describe your data: capture conditions, subject matter, annotation status, any existing metadata..."></textarea>
+      </div>
+
+      <div class="btn-group">
+        <button class="btn-secondary" onclick="goToPage(2)">← Back</button>
+        <button class="btn-primary" onclick="goToPage(4)">Continue → Compliance</button>
+      </div>
+    </main>
+  </div>
+</div>
+
+<!-- ═══ PAGE 4: COMPLIANCE ═══ -->
+<div class="page" id="page4">
+  <div class="form-layout">
+    <aside class="form-sidebar">
+      <div class="sidebar-section">
+        <span class="sidebar-label">Step 4 of 4</span>
+      </div>
+      <div class="sidebar-section">
+        <span class="sidebar-label">Why compliance matters</span>
+        <p class="sidebar-info">cllctd's entire value proposition to buyers is <em style="color:var(--amber)">provenance and consent</em>. Every dataset must have a clean legal chain of custody before it enters the marketplace.</p>
+      </div>
+      <div class="sidebar-section">
+        <div class="sidebar-tip">
+          <strong>🔒 Legal support</strong>
+          If you need help with consent frameworks or data licensing agreements, our legal team can assist. Note this in the final field.
+        </div>
+      </div>
+    </aside>
+
+    <main class="form-main">
+      <h2 class="form-section-title">Compliance &amp; Consent</h2>
+      <p class="form-section-sub">cllctd only lists datasets with a verified legal chain of custody. Please confirm the following.</p>
+
+      <div class="field-group">
+        <label>Current Consent Framework</label>
+        <select id="consentType">
+          <option value="">Select consent model</option>
+          <option>Explicit opt-in (signed consent per contributor)</option>
+          <option>Employer / institutional consent (worker data)</option>
+          <option>Rights-holder licensing agreement</option>
+          <option>Public domain / open licence</option>
+          <option>Custom legal framework (describe below)</option>
+          <option>Not yet established — need guidance</option>
+        </select>
+      </div>
+
+      <div class="field-group">
+        <label>Applicable Regulations <span class="hint">Select all that apply</span></label>
+        <div class="pill-group">
+          <label class="pill" onclick="togglePill(this)"><input type="checkbox">India DPDP Act</label>
+          <label class="pill" onclick="togglePill(this)"><input type="checkbox">UAE PDPL</label>
+          <label class="pill" onclick="togglePill(this)"><input type="checkbox">EU GDPR</label>
+          <label class="pill" onclick="togglePill(this)"><input type="checkbox">US CCPA</label>
+          <label class="pill" onclick="togglePill(this)"><input type="checkbox">HIPAA (medical)</label>
+          <label class="pill" onclick="togglePill(this)"><input type="checkbox">None / Unsure</label>
+        </div>
+      </div>
+
+      <div class="field-group">
+        <label>PII Handling</label>
+        <select id="piiHandling">
+          <option value="">Select current approach</option>
+          <option>Fully anonymised before submission</option>
+          <option>Pseudonymised with reversible key held by us</option>
+          <option>PII present — willing to anonymise</option>
+          <option>PII present — requires custom agreement</option>
+          <option>No PII in dataset</option>
+        </select>
+      </div>
+
+      <hr class="form-divider">
+
+      <p style="font-size:0.75rem;font-weight:600;letter-spacing:0.08em;text-transform:uppercase;color:var(--cream-d);margin-bottom:1rem;">Required agreements</p>
+
+      <div class="consent-item" id="ci1" onclick="toggleConsent('ci1')">
+        <input type="checkbox" id="consent1">
+        <div class="consent-check">✓</div>
+        <div class="consent-text">
+          <strong>Data Authenticity</strong>
+          I confirm that the data I am submitting was collected through legitimate means and that I hold or can demonstrate the right to license it.
+        </div>
+      </div>
+
+      <div class="consent-item" id="ci2" onclick="toggleConsent('ci2')">
+        <input type="checkbox" id="consent2">
+        <div class="consent-check">✓</div>
+        <div class="consent-text">
+          <strong>Contributor Consent</strong>
+          Where data includes identifiable individuals, I confirm that appropriate consent has been obtained and can be evidenced upon request.
+        </div>
+      </div>
+
+      <div class="consent-item" id="ci3" onclick="toggleConsent('ci3')">
+        <input type="checkbox" id="consent3">
+        <div class="consent-check">✓</div>
+        <div class="consent-text">
+          <strong>Exclusivity Notice</strong>
+          I understand that exclusive dataset listings command a premium price and that I will disclose if data has been licensed to other parties.
+        </div>
+      </div>
+
+      <div class="consent-item" id="ci4" onclick="toggleConsent('ci4')">
+        <input type="checkbox" id="consent4">
+        <div class="consent-check">✓</div>
+        <div class="consent-text">
+          <strong>Platform Terms</strong>
+          I agree to cllctd's contributor terms of service including the revenue sharing structure and payment terms.
+        </div>
+      </div>
+
+      <hr class="form-divider">
+
+      <div class="field-group">
+        <label>Additional Notes <span class="hint">Anything we should know</span></label>
+        <textarea id="notes" placeholder="Legal setup questions, special data types, timeline, partnership ideas..."></textarea>
+      </div>
+
+      <div class="btn-group">
+        <button class="btn-secondary" onclick="goToPage(3)">← Back</button>
+        <button class="btn-primary" onclick="submitForm()">Submit Application →</button>
+      </div>
+    </main>
+  </div>
+</div>
+
+<!-- ═══ SUCCESS PAGE ═══ -->
+<div class="page" id="page5">
+  <div class="success-page">
+    <div class="success-inner">
+      <div class="success-icon">✓</div>
+      <h2>Application received.</h2>
+      <p>Your vendor application has been submitted to the cllctd team. We review every application personally and will be in touch within 5 business days.</p>
+
+      <div class="success-ref">
+        <strong id="refCode">CLLCTD-VND-2026-0001</strong>
+        Your application reference — quote this in any correspondence
+      </div>
+
+      <div class="success-next">
+        <div class="next-item">
+          <div class="step-tag">Next → Day 1–5</div>
+          <h4>Application Review</h4>
+          <p>Our team reviews your data profile and checks fit with current buyer demand.</p>
+        </div>
+        <div class="next-item">
+          <div class="step-tag">Next → Day 5–10</div>
+          <h4>Onboarding Call</h4>
+          <p>30-minute call to discuss dataset specs, pricing, and legal framework setup.</p>
+        </div>
+        <div class="next-item">
+          <div class="step-tag">Next → Week 2–3</div>
+          <h4>Listing Agreement</h4>
+          <p>Sign vendor agreement, submit sample dataset, set your pricing preferences.</p>
+        </div>
+        <div class="next-item">
+          <div class="step-tag">Next → Week 3+</div>
+          <h4>Go Live</h4>
+          <p>Dataset listed in marketplace, buyer matching begins, first deals close.</p>
+        </div>
+      </div>
+
+      <button class="btn-primary" onclick="location.reload()">Submit Another Application</button>
+    </div>
+  </div>
+</div>
+
+<script>
+  // Cursor
+  const cursor = document.getElementById('cursor');
+  const ring = document.getElementById('cursorRing');
+  document.addEventListener('mousemove', e => {
+    cursor.style.left = e.clientX + 'px';
+    cursor.style.top = e.clientY + 'px';
+    ring.style.left = e.clientX + 'px';
+    ring.style.top = e.clientY + 'px';
+  });
+
+  // State
+  let currentPage = 1;
+  let selectedType = null;
+  const totalPages = 4;
+
+  const progressPcts = { 1: 20, 2: 45, 3: 70, 4: 90, 5: 100 };
+  const navIds = ['navStep1','navStep2','navStep3','navStep4'];
+
+  function goToPage(n) {
+    document.getElementById('page' + currentPage).classList.remove('active');
+    document.getElementById('page' + n).classList.add('active');
+    currentPage = n;
+    updateProgress();
+    window.scrollTo({ top: 0, behavior: 'smooth' });
+  }
+
+  function updateProgress() {
+    document.getElementById('progressFill').style.width = progressPcts[currentPage] + '%';
+    navIds.forEach((id, i) => {
+      const el = document.getElementById(id);
+      el.classList.remove('active','done');
+      if (i + 1 < currentPage) el.classList.add('done');
+      else if (i + 1 === currentPage) el.classList.add('active');
+      if (el.classList.contains('done')) {
+        el.querySelector('.step-num').textContent = '✓';
+      } else {
+        el.querySelector('.step-num').textContent = i + 1;
+      }
+    });
+  }
+
+  function selectType(type) {
+    selectedType = type;
+    document.querySelectorAll('.vendor-type').forEach(el => el.classList.remove('selected'));
+    const map = { hardware: 'vt1', voice: 'vt2', institutional: 'vt3', contributor: 'vt4' };
+    document.getElementById(map[type]).classList.add('selected');
+  }
+
+  function selectPill(el, group) {
+    document.querySelectorAll('#' + group + ' .pill').forEach(p => p.classList.remove('selected'));
+    el.classList.add('selected');
+  }
+
+  function togglePill(el) {
+    el.classList.toggle('selected');
+  }
+
+  function toggleConsent(id) {
+    const el = document.getElementById(id);
+    el.classList.toggle('checked');
+    const cb = el.querySelector('input[type="checkbox"]');
+    cb.checked = !cb.checked;
+  }
+
+  function validateField(fieldId, groupId) {
+    const val = document.getElementById(fieldId).value.trim();
+    const group = document.getElementById(groupId);
+    if (val) {
+      group.classList.remove('invalid');
+      group.classList.add('valid');
+    } else {
+      group.classList.remove('valid');
+    }
+    updateCompleteness2();
+  }
+
+  function validateEmail() {
+    const val = document.getElementById('email').value.trim();
+    const group = document.getElementById('fg-email');
+    const emailRx = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+    if (emailRx.test(val)) {
+      group.classList.remove('invalid');
+      group.classList.add('valid');
+    } else {
+      group.classList.remove('valid');
+    }
+    updateCompleteness2();
+  }
+
+  function updateCompleteness2() {
+    const fields = ['orgName', 'country', 'contactName', 'email'];
+    const filled = fields.filter(f => document.getElementById(f).value.trim()).length;
+    const pct = Math.round(filled / fields.length * 100);
+    document.getElementById('comp2Pct').textContent = pct + '%';
+    document.getElementById('comp2Fill').style.width = pct + '%';
+    autoSave();
+  }
+
+  function validateAndNext(fromPage) {
+    if (fromPage === 2) {
+      let valid = true;
+      const required = [
+        { id: 'orgName', group: 'fg-orgName' },
+        { id: 'country', group: 'fg-country' },
+        { id: 'contactName', group: 'fg-contactName' },
+        { id: 'email', group: 'fg-email' },
+      ];
+      required.forEach(({ id, group }) => {
+        const val = document.getElementById(id).value.trim();
+        const grp = document.getElementById(group);
+        if (!val) {
+          grp.classList.add('invalid');
+          grp.classList.remove('valid');
+          valid = false;
+        }
+      });
+      // Email validation
+      const emailRx = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+      if (!emailRx.test(document.getElementById('email').value)) {
+        document.getElementById('fg-email').classList.add('invalid');
+        valid = false;
+      }
+      if (valid) goToPage(3);
+      else document.querySelector('.field-group.invalid input, .field-group.invalid select')?.scrollIntoView({ behavior: 'smooth', block: 'center' });
+    }
+  }
+
+  // Volume display
+  const volLabels = ['< 1,000', '2,500', '5,000', '10,000', '25,000', '50,000', '100,000', '200,000', '350,000', '500,000', '500,000+'];
+  function updateVolume(val) {
+    document.getElementById('volumeDisplay').textContent = '~' + volLabels[val] + ' hours / files';
+  }
+
+  // File upload
+  function handleUpload(input) {
+    const list = document.getElementById('uploadList');
+    list.innerHTML = '';
+    Array.from(input.files).forEach(f => {
+      const item = document.createElement('div');
+      item.className = 'upload-file-item';
+      item.innerHTML = `<span style="color:var(--cream-d)">${f.name}</span><span>✓ Ready</span>`;
+      list.appendChild(item);
+    });
+  }
+
+  // Drag & drop
+  const uploadZone = document.getElementById('uploadZone');
+  uploadZone.addEventListener('dragover', e => { e.preventDefault(); uploadZone.classList.add('dragover'); });
+  uploadZone.addEventListener('dragleave', () => uploadZone.classList.remove('dragover'));
+  uploadZone.addEventListener('drop', e => {
+    e.preventDefault();
+    uploadZone.classList.remove('dragover');
+    const list = document.getElementById('uploadList');
+    list.innerHTML = '';
+    Array.from(e.dataTransfer.files).forEach(f => {
+      const item = document.createElement('div');
+      item.className = 'upload-file-item';
+      item.innerHTML = `<span style="color:var(--cream-d)">${f.name}</span><span>✓ Ready</span>`;
+      list.appendChild(item);
+    });
+  });
+
+  // Auto-save simulation
+  let saveTimeout;
+  function autoSave() {
+    clearTimeout(saveTimeout);
+    document.getElementById('saveStatus').textContent = 'Saving…';
+    document.getElementById('saveStatus').className = 'nav-save';
+    saveTimeout = setTimeout(() => {
+      document.getElementById('saveStatus').textContent = '✓ Draft saved';
+      document.getElementById('saveStatus').className = 'nav-save saved';
+    }, 800);
+  }
+
+  // Submit
+  function submitForm() {
+    const consents = ['ci1','ci2','ci3','ci4'];
+    const allChecked = consents.every(id => document.getElementById(id).classList.contains('checked'));
+    if (!allChecked) {
+      alert('Please confirm all required agreements before submitting.');
+      return;
+    }
+    // Generate ref code
+    const ref = 'CLLCTD-VND-2026-' + String(Math.floor(Math.random() * 9000) + 1000);
+    document.getElementById('refCode').textContent = ref;
+    goToPage(5);
+  }
+
+  // Init
+  updateProgress();
+</script>
+</body>
+</html>
